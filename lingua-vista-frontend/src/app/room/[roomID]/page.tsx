@@ -75,6 +75,7 @@ const RoomPage = ({ params }) => {
     if (p.roomID) {
       let peer;
 
+      // this makes it run ONLY on the client
       if (typeof window !== "undefined") {
         peer = new Peer(p.roomID, {
           host: "localhost",
