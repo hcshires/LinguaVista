@@ -18,6 +18,8 @@ const startPeer = () => {
   });
 };
 
+// start beyond basic peer server to allow receiving data from client 
+
 module.exports = {
   peerServer,
   startPeer,
