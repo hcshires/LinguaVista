@@ -2,9 +2,12 @@
   "name": "lingua-vista-frontend",
   "version": "0.1.0",
   "private": true,
+  "main": "main/main.mjs",
+  "author": "RBFraphael",
+  "description": "See, speak, and connect with others around the world through AI-powered immersive visual learning.",
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
+    "dev": "concurrently -n \"NEXT,ELECTRON\" -c \"yellow,blue\" --kill-others \"next dev\" \"electron .\"",
+    "build": "next build && electron-builder",
     "start": "next start",
     "lint": "next lint"
   },
