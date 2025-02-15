@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const { queueUser } = require("../controllers/user.js");
+const { getUsers } = require("../controllers/room.js");
 
-router.post("/queue", queueUser);
+router.post("/users", getUsers);
 
 module.exports = router;
