@@ -8,3 +8,7 @@ See, speak, and connect with others around the world through AI-powered, immersi
 - Brayton Lordianto
 - Raina Song
 - Abhushan Pradhan
+
+## Made at TreeHacks 2025
+
+Devpost: https://devpost.com/software/linguavista-language-cultural-learning-platform
