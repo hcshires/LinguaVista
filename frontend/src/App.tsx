@@ -4,7 +4,7 @@ import { Routes, Route, HashRouter } from "react-router-dom";
 import { SearchContextProvider } from "./context/SearchContext.tsx";
 import { ROUTES } from "./helpers/Lang.ts";
 import Home from "./pages/Home.tsx";
-import Chat from "./pages/Chat.tsx";
+import Chat from "./pages/Chat-old.tsx";
 import Notes from "./pages/Notes.tsx";
 import { ConversationContextProvider } from "./context/ConversationContext.tsx";
 

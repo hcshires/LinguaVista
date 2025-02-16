@@ -14,10 +14,68 @@ interface WebGLTypes {
   type Vec3 = WebGLTypes['Vec3'];
   type MeshData = WebGLTypes['MeshData'];
   
-const Bubble: React.FC = () => {
+const Bubble: React.FC = ({ setThinking }) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
-	const [zScale, setZScale] = useState<number>(0.5);
 	const [noiseValue, setNoiseValue] = useState<number>(0.1);
+	const [color, setColor] = useState<string>("vec3(0.0, 0.5, 0.5), vec3(0.0, 1.0, 0.9)");
+	const [zScale, setZScale] = useState<number>(0.5);
+	const [isForward, setIsForward] = useState(true);
+	const [thoughts, setThoughts] = useState<string>("Hi! I'm your AI assistant. Ask me anything and give me a nudge!");
+
+	  // Create animation function
+	  const startAnimation = () => {
+		setThinking(true);
+		setThoughts("Thinking...");
+
+		// Initial and target values
+		const initialValues = {
+		  noise: 0.1,
+		  zScale: 0.5,
+		  color: "vec3(0.0, 0.5, 0.5), vec3(0.0, 1.0, 0.9)"
+		};
+	
+		const targetValues = {
+		  noise: 0.2,
+		  zScale: 3.,
+		  color: "vec3(1.0, 0., 0.5), vec3(1.0, 1.0, 0.4)"
+		};
+	
+		// Set start and end based on direction
+		const start = isForward ? initialValues : targetValues;
+		const end = isForward ? targetValues : initialValues;
+	
+		const transitionDuration = 1000;
+		const steps = 60;
+		const interval = transitionDuration / steps;
+		
+		const noiseIncrement = (end.noise - start.noise) / steps;
+		const zScaleIncrement = (end.zScale - start.zScale) / steps;
+		
+		const timer = setInterval(() => {
+		  setNoiseValue(prev => {
+			if (Math.abs(prev - end.noise) < Math.abs(noiseIncrement)) {
+			  return end.noise;
+			}
+			return prev + noiseIncrement;
+		  });
+		
+		  setZScale(prev => {
+			if (Math.abs(prev - end.zScale) < Math.abs(zScaleIncrement)) {
+			  return end.zScale;
+			}
+			return prev + zScaleIncrement;
+		  });
+		
+		  setColor(end.color);
+		}, interval);
+	
+		// Clear interval and toggle direction after animation completes
+		setTimeout(() => {
+		  clearInterval(timer);
+		  setIsForward(!isForward);
+		  setThoughts("");
+		}, transitionDuration);
+	  };
 	
 	const mIdentity = (): Matrix4 => [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
 	
@@ -133,7 +191,7 @@ const Bubble: React.FC = () => {
   
 	  vec3 getMixedValueColor() {
 		float mixValue = getMixValue();
-		vec3 mixColor = mix(vec3(0.0, 0.5, 0.5), vec3(0.0, 1.0, 0.9), mixValue);
+		vec3 mixColor = mix(`+color+`, mixValue);
 		return mixColor;
 	  }
   
@@ -186,7 +244,7 @@ const Bubble: React.FC = () => {
   
 	  const vertexSize = 6;
 	  const meshData = [
-		{ type: 0, mesh: new Float32Array(sphere(40, 20)) }
+		{ type: 0, mesh: new Float32Array(sphere(100, 50)) }
 	  ];
   
 	  const vertexAttribute = (name: string, size: number, position: number): void => {
@@ -212,8 +270,9 @@ const Bubble: React.FC = () => {
   
 		for (let n = 0; n < meshData.length; n++) {
 		  let m = mIdentity();
-		  m = mTranslate(0, 0, 0, m);
-		  m = mScale(0.5, 0.5, zScale, m);
+		  m = mTranslate(0., 0, 0, m);
+		//   m = mScale(0.5, 0.5, zScale, m);
+		m = mScale(0.9, 0.9, zScale, m);
   
 		  if (uMatrix) gl.uniformMatrix4fv(uMatrix, false, m);
 		  if (uInvMatrix) gl.uniformMatrix4fv(uInvMatrix, false, mInverse(m));
@@ -238,11 +297,13 @@ const Bubble: React.FC = () => {
 		// <ConfigProvider theme={{ token: { colorPrimary: "#00b96b" } }}>
 		// 	<div className="App">
 			<div className="flex flex-col items-center bg-black p-4 w-full">
+			<div>{thoughts}</div>
 			<canvas 
 				ref={canvasRef} 
 				width={500} 
 				height={500} 
 				className="mb-4"
+				onClick={startAnimation}
 			/>
 			</div>
 		// 	</div>

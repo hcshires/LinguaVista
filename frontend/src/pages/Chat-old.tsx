@@ -6,11 +6,13 @@ import { useConversation } from "../context/ConversationContext";
 import { Footer } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import { Comment } from "@ant-design/compatible/";
+import Bubble from "../components/bubble";
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const Chat: React.FC = () => {
+	
 	const { currConvo, setAllConvos, setCurrConvo, appendConvo } = useConversation();
 
 	const [prompt, setPrompt] = useState("");
@@ -23,6 +25,7 @@ const Chat: React.FC = () => {
 	const [volume, setVolume] = useState(0);
 	const [aiActive, setAiActive] = useState(false);
 	const userActive = useMemo(() => !aiActive && volume > 20, [volume, aiActive]);
+	const [isAgentThinking, setIsAgentThinking] = useState(false);
 
 	const userVidRef = useRef(null);
 	const userVidRef2 = useRef(null);
@@ -120,12 +123,12 @@ const Chat: React.FC = () => {
 
 		if (userVidRef.current) {
 			userVidRef.current.srcObject = stream;
-			userVidRef2.current.srcObject = stream;
+			// userVidRef2.current.srcObject = stream;
 		}
 	};
 
 	useEffect(() => {
-		if (userVidRef && !userVidRef.current.srcObject) {
+		if (userVidRef) {
 			handleStream();
 		}
 		let audioContext;
@@ -185,7 +188,7 @@ const Chat: React.FC = () => {
 								appendConvo();
 							}}
 						/>
-						<Card style={{ flex: 1, backgroundColor: "green" }} />
+						{/* <Card style={{ flex: 1, backgroundColor: "green" }} /> */}
 						<MenuOutlined
 							style={{ padding: "12px 36px", borderWidth: 1, borderColor: "black", color: "black", fontSize: 36 }}
 							onClick={() => {
@@ -193,6 +196,7 @@ const Chat: React.FC = () => {
 							}}
 						/>
 					</Flex>
+				<center><Bubble setThinking={setIsAgentThinking}/></center>
 				</Content>
 				<Footer style={{ backgroundColor: "grey" }}>
 					<Flex flex={1} dir="row" justify="space-evenly">
@@ -222,7 +226,7 @@ const Chat: React.FC = () => {
 							style={
 								aiActive
 									? {
-											backgroundColor: "#0eab1d",
+											backgroundColor: "transparent",
 											width: 310,
 											height: 235,
 											display: "flex",
@@ -238,7 +242,7 @@ const Chat: React.FC = () => {
 											alignItems: "center",
 									  }
 							}>
-							<video width={300} playsInline ref={userVidRef2} autoPlay muted/>
+							{/* <video width={300} playsInline ref={userVidRef2} autoPlay muted/> */}
 						</div>
 					</Flex>
 				</Footer>
