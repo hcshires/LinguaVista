@@ -1,3 +1,8 @@
 models/stable-diffusion-webui/
 .DS_Store
 tsconfig.json
+__pycache__
+tsconfig.json
+.DS_Store
+*.wav
+* 2.*
