@@ -315,7 +315,9 @@ function setupMediaConnection(ws, type, clientId, meetingUuid, streamId, streams
     ws.on("message", (data) => {
         try {
             const message = JSON.parse(data);
-            console.log(`Received ${type} message type:`, message.msg_type);
+            // console.log(`Received ${type} message type:`, message.msg_type);
+            // no line separator, print ";"
+            process.stdout.write(";");            
 
             switch (message.msg_type) {
                 case "KEEP_ALIVE_RESP":
@@ -331,7 +333,7 @@ function setupMediaConnection(ws, type, clientId, meetingUuid, streamId, streams
 
                         try {
                             const audioData = Buffer.from(message.content.data, 'base64');
-                            console.log(`Received audio chunk of size: ${audioData.length} bytes`);
+                            // console.log(`Received audio chunk of size: ${audioData.length} bytes`);
                             streams.audio.write(audioData);
                             
                             const mediaMeta = {
@@ -392,7 +394,7 @@ function setupMediaConnection(ws, type, clientId, meetingUuid, streamId, streams
                     break;
 
                 default:
-                    console.log(`Unhandled ${type} message type:`, message.msg_type);
+                    // console.log(`Unhandled ${type} message type:`, message.msg_type);
                     // console.log('Message content:', message);  // Log the full message for debugging
                     // MARK  
                     // TEST 1: after 5 seconds, convert audio to mp3
@@ -550,6 +552,6 @@ app.get('/log', async (req, res) => {
 
 // every 5 seconds, log a message to the console
 setInterval(() => {
-    console.log("Server is running...");
+    // console.log("Server is running...");
 }, 5000);
 

@@ -161,8 +161,15 @@ async def process_audio(request: AudioFileRequest):
     try:
         with open(request.file_path, "rb") as f:
             print("opened file", request.file_path)
+            
+            # Transcribe the audio file
+            transcription = transcribe_audio(request.file_path)
+            
+            # Ask the LLM to answer the transcription
+            await answer(transcription["text"])
         return {"status": "success", "message": f"Processed file: {request.file_path}"}
     except Exception as e:
+        print("fail")
         raise HTTPException(status_code=500, detail=str(e))
 
 # coqui TTS
@@ -195,7 +202,6 @@ async def stream_llm(prompt, system_message=""):
     ):
         yield part["message"]["content"]
         
-
 async def answer(prompt): 
     print("answering", prompt)
     # Buffer for accumulating text
@@ -221,13 +227,74 @@ async def answer(prompt):
         cached_conversation.pop(0)
     cached_conversation.append({"role": "assistant", "content": full_text})
 
+# Speechto text (Whisper)
+import subprocess
+import json
+import os
+from typing import Optional
+
+def transcribe_audio(audio_file_path: str) -> Optional[dict]:
+    """
+    Transcribe audio using insanely-fast-whisper in whisper_env environment
+    """
+    try:
+        # Get the path to the conda/whisper_env Python interpreter
+        whisper_python = "/Users/brayton/opt/anaconda3/envs/whisper_env/bin/python"
+        
+        if not os.path.exists(audio_file_path):
+            print(f"Audio file not found: {audio_file_path}")
+            return None
+
+        # Run the whisper command in the specific environment
+        command = [
+            "/Users/brayton/opt/anaconda3/envs/whisper_env/bin/insanely-fast-whisper",
+            "--file-name", audio_file_path,
+            "--device-id", "mps",
+            "--model-name", "openai/whisper-small",
+            "--batch-size", "64",
+            "--transcript-path", "transcript.json"
+        ]
+        
+        print("Starting transcription...")
+        env = os.environ.copy()
+        env["PATH"] = f"/Users/brayton/opt/anaconda3/envs/whisper_env/bin:{env['PATH']}"
+        
+        result = subprocess.run(command, capture_output=True, text=True, env=env)
+        
+        if result.returncode != 0:
+            print(f"Error during transcription: {result.stderr}")
+            return None
+            
+        try:
+            with open("transcript.json", 'r') as f:
+                transcription = json.load(f)
+                
+            # os.remove("transcript.json")
+            print("Transcription complete")
+            return transcription
+            
+        except FileNotFoundError:
+            print("Transcription file not found")
+            return None
+        except json.JSONDecodeError:
+            print("Error parsing transcription file")
+            return None
+            
+    except Exception as e:
+        print(f"Transcription failed: {str(e)}")
+        return None
+ 
+
 if __name__ == "__main__":
     import uvicorn
-    # engine = CoquiEngine()
-    # stream = TextToAudioStream(engine)
+    engine = CoquiEngine()
+    stream = TextToAudioStream(engine)
     n = 2
     cached_conversation = []
-
+    
+    # testtranscribe 
+    # fname = "/Users/brayton/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Visual Studio Projects/Hackathons/TreeHacks25/LinguaVista/backend/recordings/ULhvT3WEBT6Srse3TgWRGx/audio.mp3"  
+    # transcription = transcribe_audio(fname)
 
     # asyncio.run(user_audio_processing())
     # print("Starting FastAPI server")
