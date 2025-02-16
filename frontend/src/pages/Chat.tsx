@@ -34,30 +34,57 @@ const Chat: React.FC = () => {
 	};
 
 	const getLlamaResponse = async (userPrompt: string) => {
-		const systemPrompt = "You are a knowledgeable historian specializing in ancient civilizations.";
-		const response = await fetch("http://localhost:11434/api/chat", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				model: "llama3",
-				messages: [
-					{
-						role: "system",
-						content: systemPrompt,
-					},
-					{
-						role: "user",
-						content: userPrompt,
-					},
-				],
-				stream: false,
-			}),
-		});
+		// const systemPrompt = "You are a knowledgeable historian specializing in ancient civilizations.";
+		// const response = await fetch("http://localhost:11434/api/chat", {
+		// 	method: "POST",
+		// 	headers: {
+		// 		"Content-Type": "application/json",
+		// 	},
+		// 	body: JSON.stringify({
+		// 		model: "llama3",
+		// 		messages: [
+		// 			{
+		// 				role: "system",
+		// 				content: systemPrompt,
+		// 			},
+		// 			{
+		// 				role: "user",
+		// 				content: userPrompt,
+		// 			},
+		// 		],
+		// 		stream: false,
+		// 	}),
+		// });
 
-		const data = await response.json();
-		return data.message.content;
+		// const data = await response.json();
+        // return data.message.content;
+        
+        const response = await fetch("http://127.0.0.1:8000/llm-result/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                prompt: userPrompt,
+            }),
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+        const imageResponse = await fetch("http://127.0.0.1:8000/generate/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ prompt: data.response }),
+        });
+
+        const imageData = await imageResponse.json();
+        console.log(imageData);
+        setImageSrc(imageData.url);
+
+        return data.response;
 	};
 
 	const handleSubmit = async (e: any) => {
