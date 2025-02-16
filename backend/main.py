@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-# from diffusers import StableDiffusionPipeline
-# import torch
+from diffusers import StableDiffusionPipeline
+import torch
 import os
-# import uuid
+import uuid
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -17,8 +17,9 @@ class ImageRequest(BaseModel):
 class AudioFileRequest(BaseModel):
     file_path: str
 
-class ChatRequest(BaseModel):
-    message: str
+class LlmRequest(BaseModel):
+    prompt: str
+    # system_message: str
 
 # Configure CORS
 app.add_middleware(
@@ -34,40 +35,40 @@ IMAGE_DIR = "temp_images"
 os.makedirs(IMAGE_DIR, exist_ok=True)
 app.mount("/images", StaticFiles(directory=IMAGE_DIR), name="images")
 
-# # Load the Stable Diffusion model
-# model_id = "CompVis/stable-diffusion-v1-4"
-# device = "mps" if torch.backends.mps.is_available() else "cpu"
-# print(f"Using defvice: {device}")
-# pipe = StableDiffusionPipeline.from_pretrained(
-#     model_id,
-#     revision="fp16",
-#     torch_dtype=torch.float16,
-#     ).to(device)
+@app.post("/generate/")
+async def generate_image(request: ImageRequest):
+    # Load the Stable Diffusion model
+    model_id = "CompVis/stable-diffusion-v1-4"
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    print(f"Using defvice: {device}")
+    pipe = StableDiffusionPipeline.from_pretrained(
+        model_id,
+        revision="fp16",
+        torch_dtype=torch.float16,
+        ).to(device)
 
-# if hasattr(torch, "compile"):
-#     pipe.__call__ = torch.compile(pipe.__call__)
+    if hasattr(torch, "compile"):
+        pipe.__call__ = torch.compile(pipe.__call__)
 
-# @app.post("/generate/")
-# async def generate_image(request: ImageRequest):
-#     try:
-#         prompt = request.prompt
-#         # Generate image from prompt
-#         # image = pipe(prompt).images[0]
-#         output = pipe(
-#             request.prompt,
-#             num_inference_steps=request.num_inference_steps,
-#             guidance_scale=request.guidance_scale
-#         )
-#         image = output.images[0]
-#         # Save the image with a unique filename
-#         filename = f"{uuid.uuid4()}.png"
-#         file_path = os.path.join(IMAGE_DIR, filename)
-#         image.save(file_path, format="PNG")
-#         # Construct the URL (adjust host/port as needed)
-#         image_url = f"http://127.0.0.1:8000/images/{filename}"
-#         return {"url": image_url}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+    try:
+        # prompt = request.prompt
+        # Generate image from prompt
+        # image = pipe(prompt).images[0]
+        output = pipe(
+            request.prompt,
+            num_inference_steps=request.num_inference_steps,
+            guidance_scale=request.guidance_scale
+        )
+        image = output.images[0]
+        # Save the image with a unique filename
+        filename = f"{uuid.uuid4()}.png"
+        file_path = os.path.join(IMAGE_DIR, filename)
+        image.save(file_path, format="PNG")
+        # Construct the URL (adjust host/port as needed)
+        image_url = f"http://127.0.0.1:8000/images/{filename}"
+        return {"url": image_url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # MARK: - Audio Processing
 import asyncio
@@ -172,9 +173,10 @@ async def process_audio(request: AudioFileRequest):
         print("fail")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 # coqui TTS
 from RealtimeTTS import TextToAudioStream, CoquiEngine
-def say(text):
+def say(text, stream):
     print("saying", text)
     def dummy_generator():
         yield text 
@@ -182,17 +184,16 @@ def say(text):
 
 # Llama LLM
 from ollama import AsyncClient
-async def stream_llm(prompt, system_message=""):
-    global cached_conversation
+async def stream_llm(cached_conversation, n, prompt, system_message=""):
     """Stream text from LLM"""
     message = {
         "role": "user",
-        "content": prompt + ". Answer concisely in one or setences."
+        "content": prompt
     }
     
     system_message = {
         "role": "system",
-        "content": "You are a knowledgeable historian specializing in ancient civilizations. " + system_message
+        "content": f"You are a friendly and warm conversation partner with a passion for {"Japanese"} culture. Keep it very concise and short, no more than 50 words! Engage in natural dialogue with the user—ask follow-up questions, share personal insights, and respond as if you were talking to a close friend. Keep your tone relaxed, genuine, and spontaneous, avoiding overly formal or mechanical language." + system_message
     }
     
     if len(cached_conversation) == n:
@@ -204,14 +205,17 @@ async def stream_llm(prompt, system_message=""):
         yield part["message"]["content"]
         
 async def answer(prompt): 
-    global cached_conversation
+    n = 2
+    cached_conversation = []
+    engine = CoquiEngine()
+    stream = TextToAudioStream(engine)
     print("answering", prompt)
     # Buffer for accumulating text
     buffer = ""
     
     # Stream from LLM and feed to TTS
     full_text = ""
-    async for chunk in stream_llm(prompt):
+    async for chunk in stream_llm(cached_conversation, n, prompt):
         buffer += chunk
         
         # Speak when we have a complete sentence
@@ -222,12 +226,23 @@ async def answer(prompt):
                              buffer.split('?', 1)
             
             # Add punctuation back and speak
-            say(to_speak + '.')
+            say(to_speak + '.', stream)
             
             full_text += to_speak + '.'
     if len(cached_conversation) == n:
         cached_conversation.pop(0)
     cached_conversation.append({"role": "assistant", "content": full_text})
+    return cached_conversation
+
+@app.post("/llm-result/")
+async def get_llm_result(request: LlmRequest, background_tasks: BackgroundTasks):
+    print("received llm request", request.prompt)
+    result = await answer(request.prompt)
+    print("llm result", result)
+    background_tasks.add_task(asyncio.run, result)
+    # background_tasks.add_task(generate_image, ImageRequest(prompt=result))
+    return {"status": "success", "message": result}
+    
 
 # Speechto text (Whisper)
 import subprocess
@@ -303,4 +318,4 @@ if __name__ == "__main__":
     # say("Hi there. This is a pretty long sentence not sayiooong anything just to test.")
     # asyncio.run(answer("Tell me an interesting fact about elephants"))  
     # asyncio.run(answer("can you summarize the previous answer in one sentence?"))  
-    uvicorn.run("main:app", host="127.0.0.1", port=3010, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
