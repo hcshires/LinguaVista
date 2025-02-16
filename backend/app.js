@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const ffmpeg = require('fluent-ffmpeg');
+const axios = require('axios');
 
 const app = express();
 const PORT = 8000;
@@ -431,6 +432,7 @@ function convertRawToPlayable(meetingUuid) {
             console.log('Starting audio conversion...');
             
             const audioProcess = spawn('ffmpeg', [
+                '-y', // Overwrite output files without asking
                 '-i', audioRawPath,
                 '-c:a', 'libmp3lame',
                 '-q:a', '3',
@@ -447,9 +449,23 @@ function convertRawToPlayable(meetingUuid) {
                         // MARK: at this point, the audio file should be playable
                         // run an endpoint on python FASTAPI server to transcribe the audio
                         // print the file path 
-                        console.log(`Audio file path: ${path.join(sessionDir, 'audio.mp3')}`);
+                        const fname = path.join(sessionDir, 'audio.mp3');
+
+                        axios.post('http://localhost:3010/process_audio/', {
+                            file_path: fname
+                        })
+                        .then(response => {
+                            console.log('Transcription response:', response.data);
+                        })
+                        .catch(error => {
+                            console.error('Error transcribing audio:', error);
+                        });
+
+                        console.log('Audio conversion completed successfully');
+
+
                         // exit the process
-                        process.exit(0);
+                        // process.exit(0);
                     } else {
                         const error = new Error(`Audio conversion failed with code ${code}`);
                         console.error(error);
@@ -516,10 +532,20 @@ process.on("SIGINT", () => {
     process.exit();
 });
 
-// Simple endpoint to log a message to the console
-app.get('/log', (req, res) => {
+// endpoint to save the audio file
+app.get('/log', async (req, res) => {
     console.log('Log endpoint was called');
-    res.send('Message logged to console');
+    try {
+        if (!globalUuid) {
+            return res.status(400).send('No recording UUID available');
+        }
+        
+        // Wait for the conversion to complete
+        await convertRawToPlayable(globalUuid);
+    } catch (error) {
+        console.error('Error converting raw files:', error);
+        return res.status(500).send('Error converting raw files');
+    } 
 });
 
 // every 5 seconds, log a message to the console
