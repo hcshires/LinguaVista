@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Flex, Input, Space } from "antd";
+import { Button, Flex, Input } from "antd";
 
 import { useSearch } from "../context/SearchContext";
 
