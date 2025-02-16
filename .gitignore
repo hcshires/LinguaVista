@@ -4,9 +4,8 @@ tsconfig.json
 *.wav
 * 2.*
 models/stable-diffusion-webui/
-backend/node_modules/axios/dist/axios.min.js
 /backend/node_modules
 /backend/recordings
-backend/audio.mp3
-/backend/models
 backend/transcript.json
+/backend/models
+backend/audio.mp3

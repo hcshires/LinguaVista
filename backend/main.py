@@ -9,6 +9,14 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+@app.on_event("startup")
+async def startup_event():
+    global tts_engine, tts_stream
+    print("Initializing TTS engine and stream...")
+    tts_engine = CoquiEngine()
+    tts_stream = TextToAudioStream(tts_engine)
+    print("TTS engine and stream ready.")
+
 class ImageRequest(BaseModel):
     prompt: str
     num_inference_steps: int = 20  # Changed default from 50 to 20
@@ -170,8 +178,9 @@ async def process_audio(request: AudioFileRequest):
             transcription = transcribe_audio(request.file_path)
             
             # Ask the LLM to answer the transcription
-            await answer(transcription["text"])
-        return {"status": "success", "message": f"Processed file: {request.file_path}"}
+            # await answer(transcription["text"])
+            return {"status": "success", "message": transcription["text"]}
+        # return {"status": "success", "message": f"Processed file: {request.file_path}"}
     except Exception as e:
         print("fail")
         raise HTTPException(status_code=500, detail=str(e))
@@ -210,8 +219,8 @@ async def stream_llm(cached_conversation, n, prompt, system_message=""):
 async def answer(prompt): 
     n = 2
     cached_conversation = []
-    engine = CoquiEngine()
-    stream = TextToAudioStream(engine)
+    # engine = CoquiEngine()
+    # stream = TextToAudioStream(engine)
     print("answering", prompt)
     # Buffer for accumulating text
     buffer = ""
@@ -229,9 +238,9 @@ async def answer(prompt):
                              buffer.split('?', 1)
             
             # Add punctuation back and speak
-            say(to_speak + '.', stream)
-            
+
             full_text += to_speak + '.'
+    say(to_speak + '.', tts_stream)
     if len(cached_conversation) == n:
         cached_conversation.pop(0)
     cached_conversation.append({"role": "assistant", "content": full_text})
@@ -259,7 +268,7 @@ def transcribe_audio(audio_file_path: str) -> Optional[dict]:
     """
     try:
         # Get the path to the conda/whisper_env Python interpreter
-        whisper_python = "/Users/brayton/opt/anaconda3/envs/whisper_env/bin/python"
+        whisper_python = "/Users/rainasong/miniforge3/envs/whisper_env/bin/python"
         
         if not os.path.exists(audio_file_path):
             print(f"Audio file not found: {audio_file_path}")
@@ -267,7 +276,7 @@ def transcribe_audio(audio_file_path: str) -> Optional[dict]:
 
         # Run the whisper command in the specific environment
         command = [
-            "/Users/brayton/opt/anaconda3/envs/whisper_env/bin/insanely-fast-whisper",
+            "/Users/rainasong/miniforge3/envs/whisper_env/bin/insanely-fast-whisper",
             "--file-name", audio_file_path,
             "--device-id", "mps",
             "--model-name", "openai/whisper-small",
@@ -277,7 +286,7 @@ def transcribe_audio(audio_file_path: str) -> Optional[dict]:
         
         print("Starting transcription...")
         env = os.environ.copy()
-        env["PATH"] = f"/Users/brayton/opt/anaconda3/envs/whisper_env/bin:{env['PATH']}"
+        env["PATH"] = f"/Users/rainasong/miniforge3/envs/whisper_env/bin:{env['PATH']}"
         
         result = subprocess.run(command, capture_output=True, text=True, env=env)
         
