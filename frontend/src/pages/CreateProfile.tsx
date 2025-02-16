@@ -2,8 +2,8 @@ import React from "react";
 import type { FormProps } from "antd";
 import { Button, Checkbox, Flex, Form, Input } from "antd";
 import { Layout } from "antd";
-
-const { Header, Content } = Layout;
+import Navbar from "../components/Navbar.tsx";
+const { Content } = Layout;
 
 type FieldType = {
 	username?: string;
@@ -22,11 +22,7 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
 const CreateProfile: React.FC = () => {
 	return (
 		<Layout style={{ height: "100vh" }}>
-			<Flex vertical>
-				<Header style={{ backgroundColor: "white" }}>
-					<h1>LinguaVista</h1>
-				</Header>
-			</Flex>
+			<Navbar />
 			<Content>
 				<Flex justify="center" align="center">
 					<h3>Create Your Profile</h3>

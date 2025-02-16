@@ -1,19 +1,21 @@
 import React from "react";
 import { ConfigProvider } from "antd";
-import { BrowserRouter as Router, Routes, Route, HashRouter } from "react-router-dom";
+import { Routes, Route, HashRouter } from "react-router-dom";
+import { SearchContextProvider } from "./context/SearchContext.tsx";
+import { ROUTES } from "./helpers/Lang.ts";
 import Home from "./pages/Home.tsx";
 import Chat from "./pages/Chat.tsx";
 import Room from "./pages/Room.tsx";
-import { SearchContextProvider } from "./context/SearchContext.tsx";
+import Notes from "./pages/Notes.tsx";
 
 const App: React.FC = () => (
 	<ConfigProvider
 		theme={{
 			components: {
 				Button: {
-					colorPrimaryBgHover: "#692974", // purple
-					colorBorder: "#692974",
-					colorText: "#692974",
+					colorBgBase: "#70B6F2",
+					colorBorder: "#0088ff",
+					colorText: "white",
 					colorBgTextHover: "white",
 					algorithm: true, // Enable algorithm
 					borderRadius: 4,
@@ -21,10 +23,7 @@ const App: React.FC = () => (
 			},
 			token: {
 				// Seed Token
-				colorPrimary: "#692974", // purple
-				colorFillSecondary: "#0DB88F", // green
-				colorFillTertiary: "#1171AC", // blue
-				colorFill: "#92F4F5", // light blue
+				colorPrimary: "#70B6F2",
 				borderRadius: 4,
 
 				// Alias Token
@@ -34,9 +33,10 @@ const App: React.FC = () => (
 		<SearchContextProvider>
 			<HashRouter>
 				<Routes>
-					<Route path="/" element={<Home />} />
-					<Route path="/room/:id" element={<Room />} />
-					<Route path="/chat" element={<Chat />} />
+					<Route path={ROUTES.HOME} element={<Home />} />
+					<Route path={ROUTES.ROOM} element={<Room />} />
+					<Route path={ROUTES.CHAT} element={<Chat />} />
+					<Route path={ROUTES.NOTES} element={<Notes />} />
 					{/* Add other routes */}
 				</Routes>
 			</HashRouter>
