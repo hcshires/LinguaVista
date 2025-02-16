@@ -3,9 +3,12 @@ import { Button, Flex, Input } from "antd";
 
 import { useSearch } from "../context/SearchContext.tsx";
 import { useNavigate } from "react-router-dom";
+import { useConversation } from "../context/ConversationContext.tsx";
 
 const SearchBar = () => {
 	const { setSearchQuery } = useSearch();
+	const { setCurrConvo } = useConversation();
+
 	const [search, setSearch] = useState("");
 	const navigate = useNavigate();
 
@@ -20,7 +23,8 @@ const SearchBar = () => {
 			<Button
 				onClick={() => {
 					setSearchQuery(search);
-					navigate("/chat", {state: {context: search}});
+					navigate("/chat", { state: { context: search } });
+					setCurrConvo([{ role: "init", content: search }]);
 				}}>
 				Start Learning!
 			</Button>

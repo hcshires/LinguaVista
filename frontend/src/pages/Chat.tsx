@@ -1,24 +1,29 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useConversation } from "../context/ConversationContext";
 
 const Chat: React.FC = () => {
+	const { currConvo, setAllConvos, setCurrConvo, appendConvo } = useConversation();
 
 	const [prompt, setPrompt] = useState("");
 	const [response, setResponse] = useState("");
 
 	const [imgPrompt, setImgPrompt] = useState("");
-    const [imageSrc, setImageSrc] = useState("");
-    
-    const location = useLocation();
+	const [imageSrc, setImageSrc] = useState("");
 
-    const userRequest = location.state.context as string;
-    console.log("User request:", userRequest);
+	const location = useLocation();
+
+	const userRequest = location.state.context as string;
+	console.log("User request:", userRequest);
 
 	const handleGenerate = async () => {
-		const image = await generateImage(imgPrompt);
+		if (currConvo.length > 1) {
+			appendConvo();
+		}
+		/*const image = await generateImage(imgPrompt);
 		if (image) {
 			setImageSrc(image);
-		}
+		}*/
 	};
 
 	const generateImage = async (prompt: string) => {
@@ -68,9 +73,10 @@ const Chat: React.FC = () => {
 	};
 
 	const handleSubmit = async (e: any) => {
+		setCurrConvo(currConvo.concat({ role: Math.random() > 0.5 ? "user" : "assistant", content: "in yo face sucka" }));
 		e.preventDefault();
-		const reply = await getLlamaResponse(prompt);
-		setResponse(reply);
+		//const reply = await getLlamaResponse(prompt);
+		//setResponse(reply);
 	};
 
 	return (

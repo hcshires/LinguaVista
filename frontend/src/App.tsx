@@ -6,6 +6,7 @@ import { ROUTES } from "./helpers/Lang.ts";
 import Home from "./pages/Home.tsx";
 import Chat from "./pages/Chat.tsx";
 import Notes from "./pages/Notes.tsx";
+import { ConversationContextProvider } from "./context/ConversationContext.tsx";
 
 const App: React.FC = () => (
 	<ConfigProvider
@@ -31,12 +32,14 @@ const App: React.FC = () => (
 		}}>
 		<HashRouter>
 			<SearchContextProvider>
-				<Routes>
-					<Route path={ROUTES.HOME} element={<Home />} />
-					<Route path={ROUTES.CHAT} element={<Chat />} />
-					<Route path={ROUTES.NOTES} element={<Notes />} />
-					{/* Add other routes */}
-				</Routes>
+				<ConversationContextProvider>
+					<Routes>
+						<Route path={ROUTES.HOME} element={<Home />} />
+						<Route path={ROUTES.CHAT} element={<Chat />} />
+						<Route path={ROUTES.NOTES} element={<Notes />} />
+						{/* Add other routes */}
+					</Routes>
+				</ConversationContextProvider>
 			</SearchContextProvider>
 		</HashRouter>
 	</ConfigProvider>

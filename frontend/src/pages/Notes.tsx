@@ -1,6 +1,7 @@
 import React from "react";
 import { Layout, Typography, Collapse } from "antd";
 import Navbar from "../components/Navbar.tsx";
+import { useConversation } from "../context/ConversationContext.tsx";
 
 const { Title, Paragraph } = Typography;
 const { Content } = Layout;
@@ -67,6 +68,10 @@ const items = [
 ];
 
 const Notes: React.FC = () => {
+	const { convoItems } = useConversation();
+
+	console.log(convoItems());
+
 	return (
 		<Layout style={{ height: "100vh", backgroundColor: "white" }}>
 			<Navbar />
@@ -81,7 +86,7 @@ const Notes: React.FC = () => {
 				<h1 style={{ fontSize: "4em", textAlign: "center" }}>My Progress and Notes</h1>
 			</Content>
 			<Content style={{ margin: "75px", height: "100%" }}>
-				<Collapse items={items} defaultActiveKey={["1"]} />
+				<Collapse items={convoItems()} defaultActiveKey={["1"]} />
 			</Content>
 		</Layout>
 	);
