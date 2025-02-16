@@ -1,10 +1,10 @@
 import React from "react";
 import { ConfigProvider } from "antd";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Chat from "./pages/Chat";
-import Room from "./pages/Room";
-import { SearchContextProvider } from "./context/SearchContext";
+import { BrowserRouter as Router, Routes, Route, HashRouter } from "react-router-dom";
+import Home from "./pages/Home.tsx";
+import Chat from "./pages/Chat.tsx";
+import Room from "./pages/Room.tsx";
+import { SearchContextProvider } from "./context/SearchContext.tsx";
 
 const App: React.FC = () => (
 	<ConfigProvider
@@ -32,14 +32,14 @@ const App: React.FC = () => (
 			},
 		}}>
 		<SearchContextProvider>
-			<Router>
+			<HashRouter>
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="/room/:id" element={<Room />} />
 					<Route path="/chat" element={<Chat />} />
 					{/* Add other routes */}
 				</Routes>
-			</Router>
+			</HashRouter>
 		</SearchContextProvider>
 	</ConfigProvider>
 );

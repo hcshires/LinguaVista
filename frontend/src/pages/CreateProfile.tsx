@@ -2,8 +2,8 @@ import React from "react";
 import type { FormProps } from "antd";
 import { Button, Checkbox, Flex, Form, Input } from "antd";
 import { Layout } from "antd";
-import { Content, Header } from "antd/es/layout/layout";
-import Navbar from "../components/Navbar";
+
+const { Header, Content } = Layout;
 
 type FieldType = {
 	username?: string;

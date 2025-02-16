@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Layout, theme, Segmented, Button, Drawer, Avatar } from "antd";
-import { SEARCH_CATEGORIES } from "../helpers/Lang";
-import SearchBar from "../components/SearchBar";
+import { SEARCH_CATEGORIES } from "../helpers/Lang.ts";
+import SearchBar from "../components/SearchBar.tsx";
 import { UserOutlined } from "@ant-design/icons";
 
 const { Header, Content } = Layout;
