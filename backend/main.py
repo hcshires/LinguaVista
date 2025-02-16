@@ -318,7 +318,7 @@ from pydub import AudioSegment
 def crop_audio(fname):
     audio = AudioSegment.from_mp3(fname)
     duration = len(audio)
-    start_time = max(0, duration - 10000)  # last 10 seconds
+    start_time = max(0, duration - 15000)  # last 15 seconds
     cropped_audio = audio[start_time:]
 
     cropped_audio.export(fname, format="mp3") 
