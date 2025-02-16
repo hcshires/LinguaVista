@@ -164,6 +164,7 @@ async def process_audio(request: AudioFileRequest):
             print("opened file", request.file_path)
             
             # Transcribe the audio file
+            crop_audio(request.file_path)
             transcription = transcribe_audio(request.file_path)
             
             # Ask the LLM to answer the transcription
@@ -301,6 +302,15 @@ def transcribe_audio(audio_file_path: str) -> Optional[dict]:
         print(f"Transcription failed: {str(e)}")
         return None
  
+#  crop to last 10 seconds of audio
+from pydub import AudioSegment
+def crop_audio(fname):
+    audio = AudioSegment.from_mp3(fname)
+    duration = len(audio)
+    start_time = max(0, duration - 10000)  # last 10 seconds
+    cropped_audio = audio[start_time:]
+
+    cropped_audio.export(fname, format="mp3") 
 
 if __name__ == "__main__":
     import uvicorn
