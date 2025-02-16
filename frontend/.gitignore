@@ -10,6 +10,8 @@
 
 # production
 /build
+/dist
+/LinguaVista-darwin-arm64
 
 # misc
 .DS_Store
