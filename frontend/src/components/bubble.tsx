@@ -36,7 +36,7 @@ const Bubble: React.FC = ({ setThinking }) => {
 	
 		const targetValues = {
 		  noise: 0.2,
-		  zScale: 3.,
+		  zScale: 2.,
 		  color: "vec3(1.0, 0., 0.5), vec3(1.0, 1.0, 0.4)"
 		};
 	
@@ -44,8 +44,8 @@ const Bubble: React.FC = ({ setThinking }) => {
 		const start = isForward ? initialValues : targetValues;
 		const end = isForward ? targetValues : initialValues;
 	
-		const transitionDuration = 1000;
-		const steps = 60;
+		const transitionDuration = 500;
+		const steps = 200;
 		const interval = transitionDuration / steps;
 		
 		const noiseIncrement = (end.noise - start.noise) / steps;
@@ -244,7 +244,7 @@ const Bubble: React.FC = ({ setThinking }) => {
   
 	  const vertexSize = 6;
 	  const meshData = [
-		{ type: 0, mesh: new Float32Array(sphere(150, 70)) }
+		{ type: 0, mesh: new Float32Array(sphere(80, 40)) }
 	  ];
   
 	  const vertexAttribute = (name: string, size: number, position: number): void => {
