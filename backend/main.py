@@ -183,6 +183,7 @@ def say(text):
 # Llama LLM
 from ollama import AsyncClient
 async def stream_llm(prompt, system_message=""):
+    global cached_conversation
     """Stream text from LLM"""
     message = {
         "role": "user",
@@ -203,6 +204,7 @@ async def stream_llm(prompt, system_message=""):
         yield part["message"]["content"]
         
 async def answer(prompt): 
+    global cached_conversation
     print("answering", prompt)
     # Buffer for accumulating text
     buffer = ""

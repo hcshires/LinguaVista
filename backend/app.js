@@ -10,6 +10,10 @@ const axios = require('axios');
 const app = express();
 const PORT = 8000;
 
+var globalUuid = '';
+var lastConversionTimestamp = 0;
+var audioBuffer = [];
+
 // Middleware to parse incoming JSON payloads
 app.use(express.json());
 
@@ -29,7 +33,8 @@ const DEFAULT_H264_SPS = Buffer.from([
 const DEFAULT_H264_PPS = Buffer.from([
     0x00, 0x00, 0x00, 0x01, 0x68, 0xce, 0x06, 0xe2
 ]);
-var globalUuid = '';
+
+
 
 // Create recordings directory if it doesn't exist
 if (!fs.existsSync(RECORDINGS_DIR)) {
@@ -335,6 +340,7 @@ function setupMediaConnection(ws, type, clientId, meetingUuid, streamId, streams
                             const audioData = Buffer.from(message.content.data, 'base64');
                             // console.log(`Received audio chunk of size: ${audioData.length} bytes`);
                             streams.audio.write(audioData);
+                            
                             
                             const mediaMeta = {
                                 timestamp: message.content.timestamp,
