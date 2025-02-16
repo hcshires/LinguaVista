@@ -2,6 +2,11 @@
 	"name": "frontend",
 	"version": "0.1.0",
 	"private": true,
+	"productName": "LinguaVista",
+	"build": {
+		"appId": "com.linguavista.app"
+	},
+	"main": "main.js",
 	"dependencies": {
 		"@ant-design/icons": "^5.6.1",
 		"@testing-library/dom": "^10.4.0",
@@ -21,9 +26,11 @@
 		"web-vitals": "^2.1.4"
 	},
 	"scripts": {
-		"start": "npm install && react-scripts start",
-		"build": "npm install && react-scripts build",
-		"test": "npm install && react-scripts test"
+		"start": "npm i && react-scripts start",
+		"electron": "npm i && electron .",
+		"build": "npm i && react-scripts build",
+		"test": "npm i && react-scripts test",
+		"package": "npm i && electron-packager ."
 	},
 	"eslintConfig": {
 		"extends": [
@@ -42,5 +49,9 @@
 			"last 1 firefox version",
 			"last 1 safari version"
 		]
+	},
+	"devDependencies": {
+		"electron": "^34.2.0",
+		"electron-packager": "^17.1.2"
 	}
 }
