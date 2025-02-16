@@ -1,11 +1,7 @@
-import React from 'react';
+import React from "react";
 
-const Room = () => {
-    return (
-        <div>
-            room
-        </div>
-    );
+const Room: React.FC = () => {
+	return <div>room</div>;
 };
 
 export default Room;

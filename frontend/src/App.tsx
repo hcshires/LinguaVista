@@ -1,25 +1,46 @@
 import React from "react";
-import { Button, ConfigProvider } from "antd";
+import { ConfigProvider } from "antd";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import Room from "./pages/Room";
-import CreateProfile from "./pages/CreateProfile";
+import { SearchContextProvider } from "./context/SearchContext";
 
 const App: React.FC = () => (
-	<ConfigProvider theme={{ token: { colorPrimary: "#00b96b" } }}>
-		{/* <div className="App">
-			<Button type="primary">Button</Button>
-		</div> */}
-		<Router>
-			<Routes>
-				<Route path="/" element={<CreateProfile />} />
-				<Route path="/home" element={<Home />} />
-				<Route path="/room/:id" element={<Room />} />
-				<Route path="/chat" element={<Chat />} />
-				{/* Add other routes */}
-			</Routes>
-		</Router>
+	<ConfigProvider
+		theme={{
+			components: {
+				Button: {
+					colorPrimaryBgHover: "#692974", // purple
+					colorBorder: "#692974",
+					colorText: "#692974",
+					colorBgTextHover: "white",
+					algorithm: true, // Enable algorithm
+					borderRadius: 4,
+				},
+			},
+			token: {
+				// Seed Token
+				colorPrimary: "#692974", // purple
+				colorFillSecondary: "#0DB88F", // green
+				colorFillTertiary: "#1171AC", // blue
+				colorFill: "#92F4F5", // light blue
+				borderRadius: 4,
+
+				// Alias Token
+				colorBgContainer: "white",
+			},
+		}}>
+		<SearchContextProvider>
+			<Router>
+				<Routes>
+					<Route path="/" element={<Home />} />
+					<Route path="/room/:id" element={<Room />} />
+					<Route path="/chat" element={<Chat />} />
+					{/* Add other routes */}
+				</Routes>
+			</Router>
+		</SearchContextProvider>
 	</ConfigProvider>
 );
 
