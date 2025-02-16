@@ -33,31 +33,6 @@ const Chat: React.FC = () => {
     const userRequest = location.state.context as string;
     console.log("User request:", userRequest);
 
-  const handleTranscript = async () => {
-    const audioFileDir = fetch('http://localhost:8000/log')
-      .then(response => {
-        
-        console.log("audio", response.text())
-        return response.text();
-      })
-      .then(data => console.log(data))
-      .catch(error => console.error('Error:', error));
-
-
-
-      // const response = await fetch("http://127.0.0.1:8001/llm-result/", {
-      //   method: "POST",
-      //   headers: {
-      //       "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //       file_path: audioFileDir,
-      //   }),
-      // });
-
-      // console.log(response);
-  };
-
 	const handleTranscript = async () => {
 		const audioFileDir = await fetch('http://localhost:8000/log').then((response) => response.text()).then((data) => {
 			console.log("data", data);
@@ -91,10 +66,22 @@ const Chat: React.FC = () => {
 		});
 		console.log(reply);
 
-		const imageResponse = await generateImage(reply);
-		if (imageResponse) {
-			setImageSrc(imageResponse);
-		}
+		// const imageResponse = await generateImage(reply);
+		// if (imageResponse) {
+		// 	setImageSrc(imageResponse);
+		// }
+		const imageResponse = await fetch("http://127.0.0.1:8001/generate/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ prompt: reply }),
+        });
+
+        const imageData = await imageResponse.json();
+        console.log(imageData);
+        setImageSrc(imageData.url);
+
 	  };
 
 	const handleGenerate = async () => {

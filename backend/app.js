@@ -554,7 +554,29 @@ app.get('/log', async (req, res) => {
         }
         
         // Wait for the conversion to complete
-        await convertRawToPlayable(globalUuid);
+        await convertRawToPlayable(globalUuid).then(() => {
+            return res.status(200).send('./recordings/' + globalUuid + '/audio.mp3');
+        })
+
+        // reset the audio stream
+        // call the connection method
+
+
+
+        // const uuid = uuidv4();
+        // const sessionDir = path.join(RECORDINGS_DIR, globalUuid) + '/' + uuid; 
+        // streams.audio.end();
+        // streams.audio.start();
+        // const result = await convertRawToPlayable(globalUuid).then((result) => {
+        //     console.log('Conversion completed');
+        //     console.log("result: ", result)
+        //     return 'Conversion completed';
+        // }).catch(error => {
+        //     console.error('Conversion failed:', error);
+        //     return 'Conversion failed';
+        // });
+        // console.log("restul: ", result)
+        
     } catch (error) {
         console.error('Error converting raw files:', error);
         return res.status(500).send('Error converting raw files');
