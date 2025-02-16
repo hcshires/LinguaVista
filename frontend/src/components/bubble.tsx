@@ -14,7 +14,7 @@ interface WebGLTypes {
   type Vec3 = WebGLTypes['Vec3'];
   type MeshData = WebGLTypes['MeshData'];
   
-const Bubble: React.FC = ({ setThinking }) => {
+const Bubble: React.FC = ({ setThinking, additionalOnClickActions }) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const [noiseValue, setNoiseValue] = useState<number>(0.1);
 	const [color, setColor] = useState<string>("vec3(0.0, 0.5, 0.5), vec3(0.0, 1.0, 0.9)");
@@ -23,7 +23,8 @@ const Bubble: React.FC = ({ setThinking }) => {
 	const [thoughts, setThoughts] = useState<string>("Hi! I'm your AI assistant. Ask me anything and give me a nudge!");
 
 	  // Create animation function
-	  const startAnimation = () => {
+	const startAnimation = () => {
+		additionalOnClickActions();
 		setThinking(true);
 		setThoughts("Thinking...");
 
@@ -297,7 +298,12 @@ const Bubble: React.FC = ({ setThinking }) => {
 		// <ConfigProvider theme={{ token: { colorPrimary: "#00b96b" } }}>
 		// 	<div className="App">
 			<div className="flex flex-col items-center bg-black p-4 w-full">
-			<div>{thoughts}</div>
+			<div style={{
+				color: "black",
+				fontSize: "1.em",
+				fontWeight: "bold",
+				textAlign: "center"
+			}}>{thoughts}</div>
 			<canvas 
 				ref={canvasRef} 
 				width={500} 

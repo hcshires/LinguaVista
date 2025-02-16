@@ -1,4 +1,4 @@
-const SEARCH_CATEGORIES = ["Language", "History", "Math", "Science"];
+const SEARCH_CATEGORIES = ["Language/Culture", "History", "Math", "Science"];
 const ROUTES = {
 	HOME: "/",
 	ROOM: "/room/:id",

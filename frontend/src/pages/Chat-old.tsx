@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Layout, Typography, theme, Segmented, Card, Flex } from "antd";
-import { LeftCircleOutlined, MenuOutlined } from "@ant-design/icons";
+import { HomeOutlined, LeftCircleOutlined, MenuOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useConversation } from "../context/ConversationContext";
 import { Footer } from "antd/es/layout/layout";
@@ -12,7 +12,6 @@ const { Content } = Layout;
 const { Title } = Typography;
 
 const Chat: React.FC = () => {
-	
 	const { currConvo, setAllConvos, setCurrConvo, appendConvo } = useConversation();
 
 	const [prompt, setPrompt] = useState("");
@@ -34,7 +33,77 @@ const Chat: React.FC = () => {
 	const location = useLocation();
 
 	const userRequest = location.state.context as string;
-	console.log("User request:", volume);
+	// console.log("User request:", volume);
+
+	// Handler to fetch transcript data and update conversation history
+	const handleTranscript = async () => {
+		// 1. Get the audio file directory
+		const audioFileDir = await fetch("http://localhost:8000/log")
+			.then((response) => response.text())
+			.then((data) => {
+				console.log("Audio file directory:", data);
+				return data;
+			});
+
+		// 2. Process user audio to get transcript text
+		const userTranscript = await fetch("http://127.0.0.1:8001/process_audio/", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				file_path: audioFileDir,
+			}),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log("User transcript data:", data);
+				return data.message;
+			});
+		console.log("User transcript:", userTranscript);
+
+		// 3. Append the user transcript to the conversation state
+		// setCurrConvo((prev) => [
+		//   ...prev,
+		//   { role: "user", content: userTranscript },
+		// ]);
+		// If using an addConversationEntry helper:
+		// addConversationEntry({ role: "user", content: userTranscript });
+
+		// 4. Fetch the tutor (assistant) response based on the user transcript
+		const tutorTranscript = await fetch("http://127.0.0.1:8001/llm-result/", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				prompt: "I want to learn about " + userRequest + "." + userTranscript,
+			}),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log("Tutor transcript data:", data);
+				return data.message[data.message.length - 1].content;
+			});
+		console.log("Tutor transcript:", tutorTranscript);
+
+		// 5. Append the tutor transcript to the conversation state
+		setCurrConvo((prev) => [...prev, { role: "assistant", content: tutorTranscript }]);
+		// Or using helper:
+		// addConversationEntry({ role: "assistant", content: tutorTranscript });
+
+		// 6. (Optional) Generate an image based on the tutor transcript
+		const imageResponse = await fetch("http://127.0.0.1:8001/generate/", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ prompt: tutorTranscript }),
+		});
+		const imageData = await imageResponse.json();
+		console.log("Image data:", imageData);
+		setImageSrc(imageData.url);
+	};
 
 	const handleGenerate = async () => {
 		if (currConvo.length > 1) {
@@ -177,34 +246,46 @@ const Chat: React.FC = () => {
 	}, []);
 
 	return (
-		<Layout style={{ height: "100vh", display: "flex", backgroundColor: "#A9A9A9" }}>
-			<Layout style={{ backgroundColor: "#A9A9A9" }}>
+		<Layout style={{ height: "100vh", display: "flex", backgroundColor: "#ffffff" }}>
+			<Layout style={{ backgroundColor: "#ffffff" }}>
 				<Content style={{ height: "100%", marginTop: 24 }}>
-					<Flex dir="row" flex={1} justify="flex-start" align="flex-start">
-						<LeftCircleOutlined
-							style={{ padding: "12px 36px", color: "red", fontSize: 36 }}
+					<Flex dir="row" flex={1} justify="space-between" align="flex-center">
+						<HomeOutlined
+							style={{ padding: "12px 24px", color: "black", fontSize: 36 }}
 							onClick={() => {
 								navigate("/");
 								appendConvo();
 							}}
 						/>
+						{/* <LeftCircleOutlined
+							style={{ padding: "12px 36px", color: "red", fontSize: 36 }}
+							onClick={() => {
+								navigate("/");
+								appendConvo();
+							}}
+						/> */}
 						{/* <Card style={{ flex: 1, backgroundColor: "green" }} /> */}
 						<MenuOutlined
-							style={{ padding: "12px 36px", borderWidth: 1, borderColor: "black", color: "black", fontSize: 36 }}
+							style={{ padding: "12px 24px", borderWidth: 1, borderColor: "black", color: "black", fontSize: 36 }}
 							onClick={() => {
 								setViewTranscript(!viewTranscript);
 							}}
 						/>
 					</Flex>
-				<center><Bubble setThinking={setIsAgentThinking}/></center>
+					<center>
+						
+						<Bubble setThinking={setIsAgentThinking} additionalOnClickActions={handleTranscript} />
+	
+					</center>
 				</Content>
-				<Footer style={{ backgroundColor: "grey" }}>
+				<Footer style={{ backgroundColor: "" }}>
 					<Flex flex={1} dir="row" justify="space-evenly">
 						<div
 							style={
 								userActive
 									? {
-											backgroundColor: "#0eab1d",
+											backgroundColor: "#96db58",
+											borderRadius: 10,
 											width: 310,
 											height: 235,
 											display: "flex",
@@ -213,6 +294,7 @@ const Chat: React.FC = () => {
 									  }
 									: {
 											backgroundColor: "transparent",
+											borderRadius: 10,
 											width: 310,
 											height: 235,
 											display: "flex",
@@ -220,7 +302,17 @@ const Chat: React.FC = () => {
 											alignItems: "center",
 									  }
 							}>
-							<video width={300} playsInline ref={userVidRef} autoPlay muted />
+							<video
+								style={{
+									borderRadius: 8,
+									transform: "scaleX(-1)",
+								}}
+								width={300}
+								playsInline
+								ref={userVidRef}
+								autoPlay
+								muted
+							/>
 						</div>
 						<div
 							style={
@@ -243,30 +335,54 @@ const Chat: React.FC = () => {
 									  }
 							}>
 							{/* <video width={300} playsInline ref={userVidRef2} autoPlay muted/> */}
+							{/* the image data */}
+							{imageSrc && (
+								<img
+									style={{
+										borderRadius: 8,
+										backgroundColor: "#f0f7fa",
+									}}
+									src={imageSrc}
+									width={300}
+									height={225}
+									alt="Generated"
+								/>
+							)}
 						</div>
 					</Flex>
 				</Footer>
 			</Layout>
 			<Sider trigger={null} collapsed={viewTranscript} collapsible={true} collapsedWidth={0} width={300} reverseArrow={true}>
-				<Flex vertical style={{ height: "100%", backgroundColor: "white", padding: 24 }} justify="flex-start">
-					<Title style={{ textAlign: "center" }}>Transcript</Title>
-					{currConvo.map((convo) => (
-						<Comment
-							author={convo.role}
-							content={
-								<div
-									style={{
-										width: "100%",
-										padding: "8px 12px",
-										background: "#f0f0f0",
-										borderRadius: "16px",
-										display: "inline-block",
-									}}>
-									{convo.content}
-								</div>
-							}
-						/>
-					))}
+				<Flex vertical style={{ height: "100%", backgroundColor: "#f0f7fa", padding: 24 }} justify="flex-start">
+					<p
+						style={{
+							fontSize: "2em",
+							fontWeight: "bold",
+							textAlign: "center",
+							marginBottom: 24,
+						}}>
+						Transcript
+					</p>
+					<div style={{ height: "100%", overflowY: "scroll" }}>
+						{currConvo.map((convo) => (
+							<Comment
+								key={Math.random()}
+								author={convo.role}
+								content={
+									<div
+										style={{
+											width: "100%",
+											padding: "8px 12px",
+											background: "#f0f0f0",
+											borderRadius: "16px",
+											display: "inline-block",
+										}}>
+										{convo.content}
+									</div>
+								}
+							/>
+						))}
+					</div>
 				</Flex>
 			</Sider>
 		</Layout>

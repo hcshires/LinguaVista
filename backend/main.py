@@ -43,8 +43,14 @@ IMAGE_DIR = "temp_images"
 os.makedirs(IMAGE_DIR, exist_ok=True)
 app.mount("/images", StaticFiles(directory=IMAGE_DIR), name="images")
 
+# look for cached, or wait until cached is available
 @app.post("/generate/")
 async def generate_image(request: ImageRequest):
+    # # wait 
+    # global cached_image
+    # while not cached_image:
+    #     pass
+    # return {"url": cached_image}
     # Load the Stable Diffusion model
     model_id = "CompVis/stable-diffusion-v1-4"
     device = "mps" if torch.backends.mps.is_available() else "cpu"
@@ -63,7 +69,7 @@ async def generate_image(request: ImageRequest):
         # Generate image from prompt
         # image = pipe(prompt).images[0]
         output = pipe(
-            request.prompt + "Do not draw human faces.",
+            "NO human faces and NO text." + request.prompt,
             num_inference_steps=request.num_inference_steps,
             guidance_scale=request.guidance_scale
         )
@@ -74,6 +80,44 @@ async def generate_image(request: ImageRequest):
         image.save(file_path, format="PNG")
         # Construct the URL (adjust host/port as needed)
         image_url = f"http://127.0.0.1:8001/images/{filename}"
+        cached_image = image_url
+        return {"url": image_url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# async def generate_image(request: ImageRequest):
+async def actually_generate_image(request: ImageRequest):
+    # Load the Stable Diffusion model
+    model_id = "CompVis/stable-diffusion-v1-4"
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    print(f"Using defvice: {device}")
+    pipe = StableDiffusionPipeline.from_pretrained(
+        model_id,
+        revision="fp16",
+        torch_dtype=torch.float16,
+        ).to(device)
+
+    if hasattr(torch, "compile"):
+        pipe.__call__ = torch.compile(pipe.__call__)
+
+    try:
+        # prompt = request.prompt
+        # Generate image from prompt
+        # image = pipe(prompt).images[0]
+        output = pipe(
+            "NO human faces and NO text." + request.prompt,
+            num_inference_steps=request.num_inference_steps,
+            guidance_scale=request.guidance_scale
+        )
+        image = output.images[0]
+        # Save the image with a unique filename
+        filename = f"{uuid.uuid4()}.png"
+        file_path = os.path.join(IMAGE_DIR, filename)
+        image.save(file_path, format="PNG")
+        # Construct the URL (adjust host/port as needed)
+        image_url = f"http://127.0.0.1:8001/images/{filename}"
+        cached_image = image_url
         return {"url": image_url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -249,9 +293,10 @@ async def answer(prompt):
 async def get_llm_result(request: LlmRequest, background_tasks: BackgroundTasks):
     print("received llm request", request.prompt)
     result = await answer(request.prompt)
+
+    # asynchronously call the generate without background tasks
+    
     print("llm result", result)
-    # background_tasks.add_task(asyncio.run, result)
-    # background_tasks.add_task(generate_image, ImageRequest(prompt=result))
     # await answer(request.prompt)
     return {"status": "success", "message": result}
     
@@ -325,8 +370,9 @@ def crop_audio(fname):
 
 if __name__ == "__main__":
     import uvicorn
-    engine = CoquiEngine()
-    stream = TextToAudioStream(engine)
+    cached_image = "" 
+    # engine = CoquiEngine()
+    # stream = TextToAudioStream(engine)
     n = 2
     cached_conversation = []
     

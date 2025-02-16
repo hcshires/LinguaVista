@@ -26,15 +26,23 @@ const Home: React.FC = () => {
 			<Navbar />
 			<Content
 				style={{
-					backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('images/background.jpg')",
+					// backgroundColor: "rgba(255, 255, 255, 0.9)",
+					backgroundImage: "linear-gradient(rgba(211, 229, 243, 0.7), rgba(29, 116, 182, 0.7), rgba(0, 100, 167, 0.9)), url('images/background.jpg')",
 					backgroundSize: "cover",
 					backgroundPosition: "center",
 					backgroundRepeat: "no-repeat",
-					padding: "75px",
+					// padding: "75px",
+					paddingLeft: "150px",
+					paddingRight: "150px",
+					paddingTop: "50px",
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
 					height: "100%",
 				}}>
-				<h1 style={{ fontSize: "4em", textAlign: "center" }}>Welcome back, User!</h1>
-				<h2 style={{ textAlign: "center" }}>What would you like to learn about?</h2>
+				
+				{/* <h1 style={{ fontSize: "50px", textAlign: "center", color: "white" }}>Welcome back!</h1> */}
+				<h2 style={{ textAlign: "center", fontSize: "40px", fontWeight: "bold", color: "white" }}>What would you like to learn about today?</h2>
 				<div
 					style={{
 						padding: "24px",

@@ -1,3 +1,9 @@
+* {
+	::-webkit-scrollbar {
+		display: none;
+	}
+}
+
 body {
 	margin: 0;
 	padding: 0;
@@ -5,16 +11,20 @@ body {
 	background-color: white;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	-webkit-scrollbar {
+		display: none;
+	}
 }
 
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-h1 {
-	color: #70b6f2;
-}
+/* h1 {
+	color: #1d8ef1;
+} */
 
 * {
-	font-family: "Funnel Display", serif;
+	/* font-family: "Funnel Display", serif; */
+	font-family: "Poppins", serif;
 }
