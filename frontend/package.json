@@ -1,57 +1,47 @@
 {
-	"name": "frontend",
-	"version": "0.1.0",
-	"private": true,
-	"productName": "LinguaVista",
-	"build": {
-		"appId": "com.linguavista.app"
-	},
-	"main": "main.js",
-	"dependencies": {
-		"@ant-design/icons": "^5.6.1",
-		"@testing-library/dom": "^10.4.0",
-		"@testing-library/jest-dom": "^6.6.3",
-		"@testing-library/react": "^16.2.0",
-		"@testing-library/user-event": "^13.5.0",
-		"@types/jest": "^27.5.2",
-		"@types/node": "^16.18.126",
-		"@types/react": "^19.0.8",
-		"@types/react-dom": "^19.0.3",
-		"antd": "^5.24.0",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"react-router-dom": "^7.1.5",
-		"react-scripts": "5.0.1",
-		"typescript": "^4.9.5",
-		"web-vitals": "^2.1.4"
-	},
-	"scripts": {
-		"start": "npm i && react-scripts start",
-		"electron": "npm i && electron .",
-		"build": "npm i && react-scripts build",
-		"test": "npm i && react-scripts test",
-		"package": "npm i && electron-packager ."
-	},
-	"eslintConfig": {
-		"extends": [
-			"react-app",
-			"react-app/jest"
-		]
-	},
-	"browserslist": {
-		"production": [
-			">0.2%",
-			"not dead",
-			"not op_mini all"
-		],
-		"development": [
-			"last 1 chrome version",
-			"last 1 firefox version",
-			"last 1 safari version"
-		]
-	},
-	"devDependencies": {
-		"electron": "^34.2.0",
-		"electron-packager": "^17.1.2"
-	}
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.126",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "antd": "^5.24.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^9.0.3",
+    "react-router-dom": "^7.1.5",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
