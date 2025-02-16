@@ -65,7 +65,7 @@ async def generate_image(request: ImageRequest):
         # Generate image from prompt
         # image = pipe(prompt).images[0]
         output = pipe(
-            request.prompt,
+            request.prompt + "Do not draw human faces.",
             num_inference_steps=request.num_inference_steps,
             guidance_scale=request.guidance_scale
         )
@@ -75,7 +75,7 @@ async def generate_image(request: ImageRequest):
         file_path = os.path.join(IMAGE_DIR, filename)
         image.save(file_path, format="PNG")
         # Construct the URL (adjust host/port as needed)
-        image_url = f"http://127.0.0.1:8000/images/{filename}"
+        image_url = f"http://127.0.0.1:8001/images/{filename}"
         return {"url": image_url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -198,18 +198,21 @@ def say(text, stream):
 from ollama import AsyncClient
 async def stream_llm(cached_conversation, n, prompt, system_message=""):
     """Stream text from LLM"""
-    message = {
-        "role": "user",
-        "content": prompt
-    }
-    
+
     system_message = {
         "role": "system",
-        "content": f"You are a friendly and warm conversation partner with a passion for {"Japanese"} culture. Keep it very concise and short, no more than 50 words! Engage in natural dialogue with the user—ask follow-up questions, share personal insights, and respond as if you were talking to a close friend. Keep your tone relaxed, genuine, and spontaneous, avoiding overly formal or mechanical language." + system_message
+        "content": f"You are a friendly and warm conversation partner with a passion for {"Japanese"} culture. Keep it very concise and short, no more than 50 words! Engage in natural dialogue with the user—ask follow-up questions, share personal insights, and respond as if you were talking to a close friend. Keep your tone relaxed, genuine, and spontaneous, avoiding overly formal or mechanical language. "
     }
+
+    message = {
+            "role": "user",
+            "content": prompt
+        }
+    
     
     if len(cached_conversation) == n:
         cached_conversation.pop(0)
+    cached_conversation.append(system_message)
     cached_conversation.append(message)
     async for part in await AsyncClient().chat(
         model="llama3", messages=cached_conversation, stream=True
@@ -228,19 +231,17 @@ async def answer(prompt):
     # Stream from LLM and feed to TTS
     full_text = ""
     async for chunk in stream_llm(cached_conversation, n, prompt):
-        buffer += chunk
-        
-        # Speak when we have a complete sentence
-        if any(punct in buffer for punct in '.!?'):
-            # Split at first sentence-ending punctuation
-            to_speak, buffer = buffer.split('.', 1) if '.' in buffer else \
-                             buffer.split('!', 1) if '!' in buffer else \
-                             buffer.split('?', 1)
-            
-            # Add punctuation back and speak
-
-            full_text += to_speak + '.'
-    say(to_speak + '.', tts_stream)
+            buffer += chunk
+            # Look for complete sentences that end with punctuation followed by space or newline
+            for punct in ['. ', '! ', '? ', '.\n', '!\n', '?\n']:
+                if punct in buffer:
+                    # Split at the punctuation, keeping the punctuation with the sentence
+                    parts = buffer.split(punct, 1)
+                    to_speak = parts[0] + punct[0]  # Keep the punctuation
+                    buffer = parts[1] if len(parts) > 1 else ''
+                    full_text += to_speak
+                    say(to_speak, tts_stream)
+                    break
     if len(cached_conversation) == n:
         cached_conversation.pop(0)
     cached_conversation.append({"role": "assistant", "content": full_text})
@@ -251,8 +252,9 @@ async def get_llm_result(request: LlmRequest, background_tasks: BackgroundTasks)
     print("received llm request", request.prompt)
     result = await answer(request.prompt)
     print("llm result", result)
-    background_tasks.add_task(asyncio.run, result)
+    # background_tasks.add_task(asyncio.run, result)
     # background_tasks.add_task(generate_image, ImageRequest(prompt=result))
+    # await answer(request.prompt)
     return {"status": "success", "message": result}
     
 

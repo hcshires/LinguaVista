@@ -561,7 +561,7 @@ app.get('/log', async (req, res) => {
         
         // Wait for the conversion to complete
         await convertRawToPlayable(globalUuid).then(() => {
-            return res.status(200).send({ message: './recordings/' + globalUuid + '/audio.mp3' });
+            return res.status(200).send('./recordings/' + globalUuid + '/audio.mp3');
         })
 
         // reset the audio stream

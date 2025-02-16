@@ -6,6 +6,7 @@ import { ROUTES } from "./helpers/Lang.ts";
 import Home from "./pages/Home.tsx";
 import Chat from "./pages/Chat.tsx";
 import Notes from "./pages/Notes.tsx";
+import Room from "./pages/Room.tsx";
 
 const App: React.FC = () => {
 	return (

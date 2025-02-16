@@ -9,3 +9,4 @@ models/stable-diffusion-webui/
 backend/transcript.json
 /backend/models
 backend/audio.mp3
+/backend/temp_images
