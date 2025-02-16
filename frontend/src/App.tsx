@@ -5,7 +5,6 @@ import { SearchContextProvider } from "./context/SearchContext.tsx";
 import { ROUTES } from "./helpers/Lang.ts";
 import Home from "./pages/Home.tsx";
 import Chat from "./pages/Chat.tsx";
-import Room from "./pages/Room.tsx";
 import Notes from "./pages/Notes.tsx";
 
 const App: React.FC = () => (
@@ -34,7 +33,6 @@ const App: React.FC = () => (
 			<HashRouter>
 				<Routes>
 					<Route path={ROUTES.HOME} element={<Home />} />
-					<Route path={ROUTES.ROOM} element={<Room />} />
 					<Route path={ROUTES.CHAT} element={<Chat />} />
 					<Route path={ROUTES.NOTES} element={<Notes />} />
 					{/* Add other routes */}
