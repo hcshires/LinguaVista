@@ -27,23 +27,24 @@ const App: React.FC = () => {
 					colorPrimary: "#70B6F2",
 					borderRadius: 4,
 
-				// Alias Token
-				colorBgContainer: "white",
-			},
-		}}>
-		<HashRouter>
-			<SearchContextProvider>
-				<ConversationContextProvider>
-					<Routes>
-						<Route path={ROUTES.HOME} element={<Home />} />
-						<Route path={ROUTES.CHAT} element={<Chat />} />
-						<Route path={ROUTES.NOTES} element={<Notes />} />
-						{/* Add other routes */}
-					</Routes>
-				</ConversationContextProvider>
-			</SearchContextProvider>
-		</HashRouter>
-	</ConfigProvider>
-);
+					// Alias Token
+					colorBgContainer: "white",
+				},
+			}}>
+			<HashRouter>
+				<SearchContextProvider>
+					<ConversationContextProvider>
+						<Routes>
+							<Route path={ROUTES.HOME} element={<Home />} />
+							<Route path={ROUTES.CHAT} element={<Chat />} />
+							<Route path={ROUTES.NOTES} element={<Notes />} />
+							{/* Add other routes */}
+						</Routes>
+					</ConversationContextProvider>
+				</SearchContextProvider>
+			</HashRouter>
+		</ConfigProvider>
+	);
+};
 
 export default App;

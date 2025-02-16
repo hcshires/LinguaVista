@@ -279,7 +279,7 @@ def transcribe_audio(audio_file_path: str) -> Optional[dict]:
             "/Users/rainasong/miniforge3/envs/whisper_env/bin/insanely-fast-whisper",
             "--file-name", audio_file_path,
             "--device-id", "mps",
-            "--model-name", "openai/whisper-small",
+            "--model-name", "openai/whisper-base",
             "--batch-size", "64",
             "--transcript-path", "transcript.json"
         ]
@@ -339,4 +339,4 @@ if __name__ == "__main__":
     # say("Hi there. This is a pretty long sentence not sayiooong anything just to test.")
     # asyncio.run(answer("Tell me an interesting fact about elephants"))  
     # asyncio.run(answer("can you summarize the previous answer in one sentence?"))  
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8001, reload=True)

@@ -204,148 +204,151 @@ const Chat: React.FC = () => {
 		}
 	};
 
-	useEffect(() => {
-		if (userVidRef && !userVidRef.current.srcObject) {
-			handleStream();
-		}
-		let audioContext;
-		let analyser;
-		let microphone;
-		let dataArray;
-		let animationFrameId;
+	// useEffect(() => {
+	// 	if (userVidRef && !userVidRef.current.srcObject) {
+	// 		handleStream();
+	// 	}
+	// 	let audioContext;
+	// 	let analyser;
+	// 	let microphone;
+	// 	let dataArray;
+	// 	let animationFrameId;
 
-		const getMicrophone = async () => {
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+	// 	const getMicrophone = async () => {
+	// 		try {
+	// 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-				audioContext = new window.AudioContext();
-				analyser = audioContext.createAnalyser();
-				microphone = audioContext.createMediaStreamSource(stream);
-				analyser.fftSize = 256; // Frequency resolution
-				const bufferLength = analyser.frequencyBinCount;
-				dataArray = new Uint8Array(bufferLength);
+	// 			audioContext = new window.AudioContext();
+	// 			analyser = audioContext.createAnalyser();
+	// 			microphone = audioContext.createMediaStreamSource(stream);
+	// 			analyser.fftSize = 256; // Frequency resolution
+	// 			const bufferLength = analyser.frequencyBinCount;
+	// 			dataArray = new Uint8Array(bufferLength);
 
-				microphone.connect(analyser);
+	// 			microphone.connect(analyser);
 
-				const updateVolume = () => {
-					analyser.getByteFrequencyData(dataArray);
-					const sum = dataArray.reduce((acc, val) => acc + val, 0);
-					const avgVolume = sum / bufferLength; // Normalize volume
-					setVolume(avgVolume);
-					animationFrameId = requestAnimationFrame(updateVolume);
-				};
+	// 			const updateVolume = () => {
+	// 				analyser.getByteFrequencyData(dataArray);
+	// 				const sum = dataArray.reduce((acc, val) => acc + val, 0);
+	// 				const avgVolume = sum / bufferLength; // Normalize volume
+	// 				setVolume(avgVolume);
+	// 				animationFrameId = requestAnimationFrame(updateVolume);
+	// 			};
 
-				updateVolume();
-			} catch (err) {
-				console.error("Microphone access denied", err);
-			}
-		};
+	// 			updateVolume();
+	// 		} catch (err) {
+	// 			console.error("Microphone access denied", err);
+	// 		}
+	// 	};
 
-		getMicrophone();
+	// 	getMicrophone();
 
-		return () => {
-			if (audioContext) {
-				audioContext.close();
-			}
-			if (animationFrameId) {
-				cancelAnimationFrame(animationFrameId);
-			}
-		};
-	}, []);
+	// 	return () => {
+	// 		if (audioContext) {
+	// 			audioContext.close();
+	// 		}
+	// 		if (animationFrameId) {
+	// 			cancelAnimationFrame(animationFrameId);
+	// 		}
+	// 	};
+	// }, []);
 
 	return (
-		<Layout style={{ height: "100vh", display: "flex", backgroundColor: "#A9A9A9" }}>
-			<Layout style={{ backgroundColor: "#A9A9A9" }}>
-				<Content style={{ height: "100%", marginTop: 24 }}>
-					<Flex dir="row" flex={1} justify="flex-start" align="flex-start">
-						<LeftCircleOutlined
-							style={{ padding: "12px 36px", color: "red", fontSize: 36 }}
-							onClick={() => {
-								navigate("/");
-								appendConvo();
-							}}
-						/>
-						<Card style={{ flex: 1, backgroundColor: "green" }} />
-						<MenuOutlined
-							style={{ padding: "12px 36px", borderWidth: 1, borderColor: "black", color: "black", fontSize: 36 }}
-							onClick={() => {
-								setViewTranscript(!viewTranscript);
-							}}
-						/>
-					</Flex>
-				</Content>
-				<Footer style={{ backgroundColor: "grey" }}>
-					<Flex flex={1} dir="row" justify="space-evenly">
-						<div
-							style={
-								userActive
-									? {
-											backgroundColor: "#0eab1d",
-											width: 310,
-											height: 235,
-											display: "flex",
-											justifyContent: "center",
-											alignItems: "center",
-									  }
-									: {
-											backgroundColor: "transparent",
-											width: 310,
-											height: 235,
-											display: "flex",
-											justifyContent: "center",
-											alignItems: "center",
-									  }
-							}>
-							<video width={300} playsInline ref={userVidRef} autoPlay />
-						</div>
-						<div
-							style={
-								aiActive
-									? {
-											backgroundColor: "#0eab1d",
-											width: 310,
-											height: 235,
-											display: "flex",
-											justifyContent: "center",
-											alignItems: "center",
-									  }
-									: {
-											backgroundColor: "transparent",
-											width: 310,
-											height: 235,
-											display: "flex",
-											justifyContent: "center",
-											alignItems: "center",
-									  }
-							}>
-							<video width={300} playsInline ref={userVidRef2} autoPlay />
-						</div>
-					</Flex>
-				</Footer>
-			</Layout>
-			<Sider trigger={null} collapsed={viewTranscript} collapsible={true} collapsedWidth={0} width={300} reverseArrow={true}>
-				<Flex vertical style={{ height: "100%", backgroundColor: "white", padding: 24 }} justify="flex-start">
-					<Title style={{ textAlign: "center" }}>Transcript</Title>
-					{currConvo.map((convo) => (
-						<Comment
-							author={convo.role}
-							content={
-								<div
-									style={{
-										width: "100%",
-										padding: "8px 12px",
-										background: "#f0f0f0",
-										borderRadius: "16px",
-										display: "inline-block",
-									}}>
-									{convo.content}
-								</div>
-							}
-						/>
-					))}
-				</Flex>
-			</Sider>
-		</Layout>
+		<div>
+			<button onClick={handleTranscript}>generate transcript</button>
+		</div>
+		// <Layout style={{ height: "100vh", display: "flex", backgroundColor: "#A9A9A9" }}>
+		// 	<Layout style={{ backgroundColor: "#A9A9A9" }}>
+		// 		<Content style={{ height: "100%", marginTop: 24 }}>
+		// 			<Flex dir="row" flex={1} justify="flex-start" align="flex-start">
+		// 				<LeftCircleOutlined
+		// 					style={{ padding: "12px 36px", color: "red", fontSize: 36 }}
+		// 					onClick={() => {
+		// 						navigate("/");
+		// 						appendConvo();
+		// 					}}
+		// 				/>
+		// 				<Card style={{ flex: 1, backgroundColor: "green" }} />
+		// 				<MenuOutlined
+		// 					style={{ padding: "12px 36px", borderWidth: 1, borderColor: "black", color: "black", fontSize: 36 }}
+		// 					onClick={() => {
+		// 						setViewTranscript(!viewTranscript);
+		// 					}}
+		// 				/>
+		// 			</Flex>
+		// 		</Content>
+		// 		<Footer style={{ backgroundColor: "grey" }}>
+		// 			<Flex flex={1} dir="row" justify="space-evenly">
+		// 				<div
+		// 					style={
+		// 						userActive
+		// 							? {
+		// 									backgroundColor: "#0eab1d",
+		// 									width: 310,
+		// 									height: 235,
+		// 									display: "flex",
+		// 									justifyContent: "center",
+		// 									alignItems: "center",
+		// 							  }
+		// 							: {
+		// 									backgroundColor: "transparent",
+		// 									width: 310,
+		// 									height: 235,
+		// 									display: "flex",
+		// 									justifyContent: "center",
+		// 									alignItems: "center",
+		// 							  }
+		// 					}>
+		// 					<video width={300} playsInline ref={userVidRef} autoPlay />
+		// 				</div>
+		// 				<div
+		// 					style={
+		// 						aiActive
+		// 							? {
+		// 									backgroundColor: "#0eab1d",
+		// 									width: 310,
+		// 									height: 235,
+		// 									display: "flex",
+		// 									justifyContent: "center",
+		// 									alignItems: "center",
+		// 							  }
+		// 							: {
+		// 									backgroundColor: "transparent",
+		// 									width: 310,
+		// 									height: 235,
+		// 									display: "flex",
+		// 									justifyContent: "center",
+		// 									alignItems: "center",
+		// 							  }
+		// 					}>
+		// 					<video width={300} playsInline ref={userVidRef2} autoPlay />
+		// 				</div>
+		// 			</Flex>
+		// 		</Footer>
+		// 	</Layout>
+		// 	<Sider trigger={null} collapsed={viewTranscript} collapsible={true} collapsedWidth={0} width={300} reverseArrow={true}>
+		// 		<Flex vertical style={{ height: "100%", backgroundColor: "white", padding: 24 }} justify="flex-start">
+		// 			<Title style={{ textAlign: "center" }}>Transcript</Title>
+		// 			{currConvo.map((convo) => (
+		// 				<Comment
+		// 					author={convo.role}
+		// 					content={
+		// 						<div
+		// 							style={{
+		// 								width: "100%",
+		// 								padding: "8px 12px",
+		// 								background: "#f0f0f0",
+		// 								borderRadius: "16px",
+		// 								display: "inline-block",
+		// 							}}>
+		// 							{convo.content}
+		// 						</div>
+		// 					}
+		// 				/>
+		// 			))}
+		// 		</Flex>
+		// 	</Sider>
+		// </Layout>
 	);
 };
 

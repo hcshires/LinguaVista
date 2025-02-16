@@ -216,7 +216,7 @@ const Chat: React.FC = () => {
 											alignItems: "center",
 									  }
 							}>
-							<video width={300} playsInline ref={userVidRef} autoPlay />
+							<video width={300} playsInline ref={userVidRef} autoPlay muted />
 						</div>
 						<div
 							style={
@@ -238,7 +238,7 @@ const Chat: React.FC = () => {
 											alignItems: "center",
 									  }
 							}>
-							<video width={300} playsInline ref={userVidRef2} autoPlay />
+							<video width={300} playsInline ref={userVidRef2} autoPlay muted/>
 						</div>
 					</Flex>
 				</Footer>

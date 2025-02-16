@@ -464,17 +464,17 @@ function convertRawToPlayable(meetingUuid) {
                         // print the file path 
                         const fname = path.join(sessionDir, 'audio.mp3');
 
-                        axios.post('http://localhost:3010/process_audio/', {
-                            file_path: fname
-                        })
-                        .then(response => {
-                            console.log('Transcription response:', response.data);
-                        })
-                        .catch(error => {
-                            console.error('Error transcribing audio:', error);
-                        });
+                        // axios.post('http://localhost:3010/process_audio/', {
+                        //     file_path: fname
+                        // })
+                        // .then(response => {
+                        //     console.log('Transcription response:', response.data);
+                        // })
+                        // .catch(error => {
+                        //     console.error('Error transcribing audio:', error);
+                        // });
 
-                        console.log('Audio conversion completed successfully');
+                        // console.log('Audio conversion completed successfully');
 
 
                         // exit the process
