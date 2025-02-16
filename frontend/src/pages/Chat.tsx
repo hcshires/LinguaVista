@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { Layout, theme, Segmented, Card, Flex } from "antd";
+import { LeftCircleOutlined, MenuOutlined } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
 import { useConversation } from "../context/ConversationContext";
+import { Footer } from "antd/es/layout/layout";
+
+const { Content } = Layout;
 
 const Chat: React.FC = () => {
 	const { currConvo, setAllConvos, setCurrConvo, appendConvo } = useConversation();
@@ -10,6 +15,9 @@ const Chat: React.FC = () => {
 
 	const [imgPrompt, setImgPrompt] = useState("");
 	const [imageSrc, setImageSrc] = useState("");
+
+	const userVidRef = useRef(null);
+	const userVidRef2 = useRef(null);
 
 	const location = useLocation();
 
@@ -78,7 +86,7 @@ const Chat: React.FC = () => {
 		//const reply = await getLlamaResponse(prompt);
 		//setResponse(reply);
 	};
-
+	/*
 	return (
 		<div>
 			<form onSubmit={handleSubmit}>
@@ -94,6 +102,39 @@ const Chat: React.FC = () => {
 			<button onClick={handleGenerate}>Generate Image</button>
 			{imageSrc && <img src={imageSrc} alt="Generated" />}
 		</div>
+	);*/
+	const handleStream = async () => {
+		const stream = await navigator.mediaDevices.getUserMedia({
+			video: true,
+			audio: true,
+		});
+
+		if (userVidRef.current) {
+			userVidRef.current.srcObject = stream;
+			userVidRef2.current.srcObject = stream;
+		}
+	};
+
+	useEffect(() => {
+		handleStream();
+	});
+
+	return (
+		<Layout style={{ height: "100vh", display: "flex", backgroundColor: "#A9A9A9" }}>
+			<Content style={{ height: "100%", marginTop: 24 }}>
+				<Flex dir="row" flex={1} justify="space-evenly" align="flex-start">
+					<LeftCircleOutlined style={{ margin: 12, color: "red", fontSize: 36 }} />
+					<Card style={{ width: "80%", backgroundColor: "green" }} />
+					<MenuOutlined style={{ margin: 12, color: "black", fontSize: 36 }} />
+				</Flex>
+			</Content>
+			<Footer style={{ backgroundColor: "grey" }}>
+				<Flex flex={1} dir="row" justify="space-evenly">
+					<video width={300} height={200} playsInline ref={userVidRef} autoPlay />
+					<video width={300} height={200} playsInline ref={userVidRef2} autoPlay />
+				</Flex>
+			</Footer>
+		</Layout>
 	);
 };
 
