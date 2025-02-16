@@ -244,7 +244,7 @@ const Bubble: React.FC = ({ setThinking }) => {
   
 	  const vertexSize = 6;
 	  const meshData = [
-		{ type: 0, mesh: new Float32Array(sphere(100, 50)) }
+		{ type: 0, mesh: new Float32Array(sphere(150, 70)) }
 	  ];
   
 	  const vertexAttribute = (name: string, size: number, position: number): void => {
