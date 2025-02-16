@@ -1,5 +1,5 @@
-import { createContext, useState, useMemo, useContext } from "react";
-import { SEARCH_CATEGORIES } from "../helpers/Lang";
+import React, { createContext, useState, useMemo, useContext } from "react";
+import { SEARCH_CATEGORIES } from "../helpers/Lang.ts";
 
 const SearchContext = createContext<any | null>(null);
 

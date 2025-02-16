@@ -1,7 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button, Flex, Input } from "antd";
 
-import { useSearch } from "../context/SearchContext";
+import { useSearch } from "../context/SearchContext.tsx";
 
 const SearchBar = () => {
 	const { setSearchQuery } = useSearch();
