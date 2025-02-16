@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const WebSocket = require('ws');
+const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -16,6 +17,10 @@ var audioBuffer = [];
 
 // Middleware to parse incoming JSON payloads
 app.use(express.json());
+
+app.use(cors({
+    origin: 'http://localhost:3000'
+}));
 
 // Configuration - Replace with actual values
 const ZOOM_SECRET_TOKEN = 'DyBoLm8OZoJT2Pi3-kY2px'; // Webhook secret for validation

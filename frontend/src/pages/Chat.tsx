@@ -30,8 +30,72 @@ const Chat: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const userRequest = location.state.context as string;
-	console.log("User request:", volume);
+    const userRequest = location.state.context as string;
+    console.log("User request:", userRequest);
+
+  const handleTranscript = async () => {
+    const audioFileDir = fetch('http://localhost:8000/log')
+      .then(response => {
+        
+        console.log("audio", response.text())
+        return response.text();
+      })
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
+
+
+
+      // const response = await fetch("http://127.0.0.1:8001/llm-result/", {
+      //   method: "POST",
+      //   headers: {
+      //       "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //       file_path: audioFileDir,
+      //   }),
+      // });
+
+      // console.log(response);
+  };
+
+	const handleTranscript = async () => {
+		const audioFileDir = await fetch('http://localhost:8000/log').then((response) => response.text()).then((data) => {
+			console.log("data", data);
+			return data;
+		});
+		console.log(audioFileDir);
+		  const response = await fetch("http://127.0.0.1:8001/process_audio/", {
+		    method: "POST",
+		    headers: {
+		        "Content-Type": "application/json",
+		    },
+		    body: JSON.stringify({
+		        file_path: audioFileDir,
+		    }),
+		  }).then((response) => response.json()).then((data) => {
+			  console.log("data", data);
+			  return data.message;
+		  });
+		console.log(response);
+		const reply = await fetch("http://127.0.0.1:8001/llm-result/", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				prompt: response,
+			}),
+		}).then((response) => response.json()).then((data) => {
+			console.log("data", data);
+			return data.message[data.message.length - 1].content;
+		});
+		console.log(reply);
+
+		const imageResponse = await generateImage(reply);
+		if (imageResponse) {
+			setImageSrc(imageResponse);
+		}
+	  };
 
 	const handleGenerate = async () => {
 		if (currConvo.length > 1) {
@@ -133,6 +197,8 @@ const Chat: React.FC = () => {
 				<h3>Response:</h3>
 				<p>{response}</p>
 			</div>
+
+			<button onClick={handleTranscript}>Get Transcript</button>
 
 			<input type="text" value={imgPrompt} onChange={(e) => setImgPrompt(e.target.value)} placeholder="Enter prompt" />
 			<button onClick={handleGenerate}>Generate Image</button>
