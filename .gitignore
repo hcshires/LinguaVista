@@ -1,6 +1,5 @@
-models/stable-diffusion-webui/
-<<<<<<< HEAD
+__pycache__
 tsconfig.json
-=======
 .DS_Store
->>>>>>> 3bd7f03a52be177ea149a334241301438a1d21a2
+*.wav
+* 2.*
