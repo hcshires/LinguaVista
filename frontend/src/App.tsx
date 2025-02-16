@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import Room from "./pages/Room";
 import CreateProfile from "./pages/CreateProfile";
+import GenerateImage from "./pages/Image";
 
 const App: React.FC = () => (
 	<ConfigProvider theme={{ token: { colorPrimary: "#00b96b" } }}>
@@ -17,6 +18,7 @@ const App: React.FC = () => (
 				<Route path="/home" element={<Home />} />
 				<Route path="/room/:id" element={<Room />} />
 				<Route path="/chat" element={<Chat />} />
+				<Route path="/image" element={<GenerateImage />} />
 				{/* Add other routes */}
 			</Routes>
 		</Router>
