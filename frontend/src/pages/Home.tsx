@@ -3,6 +3,7 @@ import { Layout, theme, Segmented, Card } from "antd";
 import { SEARCH_CATEGORIES } from "../helpers/Lang.ts";
 import SearchBar from "../components/SearchBar.tsx";
 import Navbar from "../components/Navbar.tsx";
+import { useNavigate } from "react-router-dom";
 
 const { Content } = Layout;
 
@@ -11,6 +12,8 @@ const Home: React.FC = () => {
 		token: { borderRadiusLG },
 	} = theme.useToken();
 	const [searchCategory, setSearchCategory] = useState(SEARCH_CATEGORIES[0]);
+
+    const navigate = useNavigate();
 
 	const items = SEARCH_CATEGORIES.map((category, index) => ({
 		key: String(index + 1),

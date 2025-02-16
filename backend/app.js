@@ -13,6 +13,13 @@ const PORT = 8000;
 var globalUuid = '';
 var lastConversionTimestamp = 0;
 var audioBuffer = [];
+var streams = null
+
+function uuidv4() {
+    return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+      (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+    );
+  }
 
 // Middleware to parse incoming JSON payloads
 app.use(express.json());
@@ -219,7 +226,7 @@ function connectToMediaWebSocket(mediaServerUrls, clientId, meetingUuid, streamI
     }
 
     // Initialize file streams with headers for video
-    const streams = {
+    streams = {
         audio: mediaServerUrls.audio ? fs.createWriteStream(path.join(sessionDir, 'audio.raw')) : null,
         video: mediaServerUrls.video ? fs.createWriteStream(path.join(sessionDir, 'video.raw')) : null,
         metadata: fs.createWriteStream(path.join(sessionDir, 'metadata.jsonl'))
@@ -341,7 +348,6 @@ function setupMediaConnection(ws, type, clientId, meetingUuid, streamId, streams
                             // console.log(`Received audio chunk of size: ${audioData.length} bytes`);
                             streams.audio.write(audioData);
 
-                            
                             const mediaMeta = {
                                 timestamp: message.content.timestamp,
                                 user_id: message.content.user_id,
@@ -552,6 +558,16 @@ app.get('/log', async (req, res) => {
         await convertRawToPlayable(globalUuid).then(() => {
             return res.status(200).send({ message: './recordings/' + globalUuid + '/audio.mp3' });
         })
+
+        // reset the audio stream
+        // call the connection method
+
+
+
+        // const uuid = uuidv4();
+        // const sessionDir = path.join(RECORDINGS_DIR, globalUuid) + '/' + uuid; 
+        // streams.audio.end();
+        // streams.audio.start();
         // const result = await convertRawToPlayable(globalUuid).then((result) => {
         //     console.log('Conversion completed');
         //     console.log("result: ", result)

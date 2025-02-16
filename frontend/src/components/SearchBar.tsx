@@ -8,7 +8,6 @@ const SearchBar = () => {
 	const { setSearchQuery } = useSearch();
 	const [search, setSearch] = useState("");
 	const navigate = useNavigate();
-	
 
 	return (
 		<Flex style={{ width: "100%", margin: "25px 0" }}>
@@ -21,9 +20,9 @@ const SearchBar = () => {
 			<Button
 				onClick={() => {
 					setSearchQuery(search);
-					navigate("/chat")
+					navigate("/chat", {state: {context: search}});
 				}}>
-				Search
+				Start Learning!
 			</Button>
 		</Flex>
 	);
