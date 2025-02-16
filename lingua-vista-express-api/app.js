@@ -42,7 +42,6 @@ const processors = {
 videoWorker.on('message', (result) => {
 });
 
-<<<<<<< HEAD
 audioWorker.on('message', (result) => {
 });
 
@@ -53,9 +52,7 @@ transcriptWorker.on('message', (result) => {
 server.listen(3010, () => {
     console.log('Server running on port 3010');
 });
-=======
 app.use(express.json());
-app.use(cors());
-app.use("/api/user", user);
-app.use("/api/image", image);
->>>>>>> 3666891bae617c9f44ff4a662849903a1f83c7c5
+// app.use(cors());
+// app.use("/api/user", user);
+// app.use("/api/image", image);
