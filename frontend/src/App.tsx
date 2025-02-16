@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ConfigProvider } from "antd";
 import { Routes, Route, HashRouter } from "react-router-dom";
 import { SearchContextProvider } from "./context/SearchContext.tsx";
@@ -8,23 +8,24 @@ import Chat from "./pages/Chat.tsx";
 import Notes from "./pages/Notes.tsx";
 import { ConversationContextProvider } from "./context/ConversationContext.tsx";
 
-const App: React.FC = () => (
-	<ConfigProvider
-		theme={{
-			components: {
-				Button: {
-					colorBgBase: "#70B6F2",
-					colorBorder: "#0088ff",
-					colorText: "white",
-					colorBgTextHover: "white",
-					algorithm: true, // Enable algorithm
-					borderRadius: 4,
+const App: React.FC = () => {
+	return (
+		<ConfigProvider
+			theme={{
+				components: {
+					Button: {
+						colorBgBase: "#70B6F2",
+						colorBorder: "#0088ff",
+						colorText: "white",
+						colorBgTextHover: "white",
+						algorithm: true, // Enable algorithm
+						borderRadius: 4,
+					},
 				},
-			},
-			token: {
-				// Seed Token
-				colorPrimary: "#70B6F2",
-				borderRadius: 4,
+				token: {
+					// Seed Token
+					colorPrimary: "#70B6F2",
+					borderRadius: 4,
 
 				// Alias Token
 				colorBgContainer: "white",

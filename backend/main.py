@@ -13,6 +13,9 @@ class ImageRequest(BaseModel):
     prompt: str
     num_inference_steps: int = 20
     guidance_scale: float = 7.5
+    
+class AudioFileRequest(BaseModel):
+    file_path: str
 
 class ChatRequest(BaseModel):
     message: str
@@ -34,7 +37,7 @@ app.mount("/images", StaticFiles(directory=IMAGE_DIR), name="images")
 # # Load the Stable Diffusion model
 # model_id = "CompVis/stable-diffusion-v1-4"
 # device = "mps" if torch.backends.mps.is_available() else "cpu"
-# print(f"Using device: {device}")
+# print(f"Using defvice: {device}")
 # pipe = StableDiffusionPipeline.from_pretrained(
 #     model_id,
 #     revision="fp16",
@@ -153,11 +156,14 @@ async def user_audio_processing():
 
 # endpnt where you input a file name 
 @app.post("/process_audio/")
-async def process_audio(filename: str):
-    print("received audio processing request", filename)
-    # processor = AudioProcessor()
-    # processor.convert_to_audio_file(filename)
-    # return {"status": "processed", "filename": filename}
+async def process_audio(request: AudioFileRequest):
+    print("received audio processing request", request.file_path)
+    try:
+        with open(request.file_path, "rb") as f:
+            print("opened file", request.file_path)
+        return {"status": "success", "message": f"Processed file: {request.file_path}"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # coqui TTS
 from RealtimeTTS import TextToAudioStream, CoquiEngine
@@ -217,8 +223,8 @@ async def answer(prompt):
 
 if __name__ == "__main__":
     import uvicorn
-    engine = CoquiEngine()
-    stream = TextToAudioStream(engine)
+    # engine = CoquiEngine()
+    # stream = TextToAudioStream(engine)
     n = 2
     cached_conversation = []
 
@@ -226,6 +232,6 @@ if __name__ == "__main__":
     # asyncio.run(user_audio_processing())
     # print("Starting FastAPI server")
     # say("Hi there. This is a pretty long sentence not sayiooong anything just to test.")
-    asyncio.run(answer("Tell me an interesting fact about elephants"))  
-    asyncio.run(answer("can you summarize the previous answer in one sentence?"))  
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # asyncio.run(answer("Tell me an interesting fact about elephants"))  
+    # asyncio.run(answer("can you summarize the previous answer in one sentence?"))  
+    uvicorn.run("main:app", host="127.0.0.1", port=3010, reload=True)
