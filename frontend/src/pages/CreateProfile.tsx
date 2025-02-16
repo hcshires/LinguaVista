@@ -1,11 +1,68 @@
-import React from 'react';
+import React from "react";
+import type { FormProps } from "antd";
+import { Button, Checkbox, Flex, Form, Input } from "antd";
+import { Layout } from "antd";
 
-const CreateProfile = () => {
-    return (
-        <div>
-            create profile page
-        </div>
-    );
+const { Header, Content } = Layout;
+
+type FieldType = {
+	username?: string;
+	password?: string;
+	remember?: string;
+};
+
+const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
+	console.log("Success:", values);
+};
+
+const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
+	console.log("Failed:", errorInfo);
+};
+
+const CreateProfile: React.FC = () => {
+	return (
+		<Layout style={{ height: "100vh" }}>
+			<Flex vertical>
+				<Header style={{ backgroundColor: "white" }}>
+					<h1>LinguaVista</h1>
+				</Header>
+			</Flex>
+			<Content>
+				<Flex justify="center" align="center">
+					<h3>Create Your Profile</h3>
+				</Flex>
+				<Flex justify="center" align="center">
+					<Form
+						name="basic"
+						labelCol={{ span: 8 }}
+						wrapperCol={{ span: 16 }}
+						style={{ maxWidth: 600 }}
+						initialValues={{ remember: true }}
+						onFinish={onFinish}
+						onFinishFailed={onFinishFailed}
+						autoComplete="off">
+						<Form.Item<FieldType> label="Username" name="username" rules={[{ required: true, message: "Please input your username!" }]}>
+							<Input />
+						</Form.Item>
+
+						<Form.Item<FieldType> label="Password" name="password" rules={[{ required: true, message: "Please input your password!" }]}>
+							<Input.Password />
+						</Form.Item>
+
+						<Form.Item<FieldType> name="remember" valuePropName="checked" label={null}>
+							<Checkbox>Remember me</Checkbox>
+						</Form.Item>
+
+						<Form.Item label={null}>
+							<Button type="primary" htmlType="submit">
+								Submit
+							</Button>
+						</Form.Item>
+					</Form>
+				</Flex>
+			</Content>
+		</Layout>
+	);
 };
 
 export default CreateProfile;

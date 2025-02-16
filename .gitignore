@@ -1,2 +1,6 @@
 models/stable-diffusion-webui/
+<<<<<<< HEAD
 tsconfig.json
+=======
+.DS_Store
+>>>>>>> 3bd7f03a52be177ea149a334241301438a1d21a2
