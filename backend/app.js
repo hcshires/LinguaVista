@@ -340,7 +340,7 @@ function setupMediaConnection(ws, type, clientId, meetingUuid, streamId, streams
                             const audioData = Buffer.from(message.content.data, 'base64');
                             // console.log(`Received audio chunk of size: ${audioData.length} bytes`);
                             streams.audio.write(audioData);
-                            
+
                             
                             const mediaMeta = {
                                 timestamp: message.content.timestamp,
@@ -459,18 +459,18 @@ function convertRawToPlayable(meetingUuid) {
                         // print the file path 
                         const fname = path.join(sessionDir, 'audio.mp3');
 
-                        axios.post('http://localhost:3010/process_audio/', {
-                            file_path: fname
-                        })
-                        .then(response => {
-                            console.log('Transcription response:', response.data);
-                        })
-                        .catch(error => {
-                            console.error('Error transcribing audio:', error);
-                        });
+                        // axios.post('http://localhost:8001/process_audio/', {
+                        //     file_path: fname
+                        // })
+                        // .then(response => {
+                        //     console.log('Transcription response:', response.data);
+                        // })
+                        // .catch(error => {
+                        //     console.error('Error transcribing audio:', error);
+                        // });
 
-                        console.log('Audio conversion completed successfully');
-
+                        // console.log('Audio conversion completed successfully');
+                        // return fname
 
                         // exit the process
                         // process.exit(0);
@@ -549,7 +549,19 @@ app.get('/log', async (req, res) => {
         }
         
         // Wait for the conversion to complete
-        await convertRawToPlayable(globalUuid);
+        await convertRawToPlayable(globalUuid).then(() => {
+            return res.status(200).send({ message: './recordings/' + globalUuid + '/audio.mp3' });
+        })
+        // const result = await convertRawToPlayable(globalUuid).then((result) => {
+        //     console.log('Conversion completed');
+        //     console.log("result: ", result)
+        //     return 'Conversion completed';
+        // }).catch(error => {
+        //     console.error('Conversion failed:', error);
+        //     return 'Conversion failed';
+        // });
+        // console.log("restul: ", result)
+        
     } catch (error) {
         console.error('Error converting raw files:', error);
         return res.status(500).send('Error converting raw files');

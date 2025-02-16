@@ -3,3 +3,4 @@ tsconfig.json
 .DS_Store
 *.wav
 * 2.*
+models/stable-diffusion-webui/

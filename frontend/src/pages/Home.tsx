@@ -34,7 +34,7 @@ const Home: React.FC = () => {
 				<h2 style={{ textAlign: "center" }}>What would you like to learn about?</h2>
 				<div
 					style={{
-						padding: "24px 250px",
+						padding: "24px",
 						borderRadius: borderRadiusLG,
 						flexDirection: "row",
 					}}>
