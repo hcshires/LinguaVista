@@ -29,16 +29,16 @@ const App: React.FC = () => (
 				colorBgContainer: "white",
 			},
 		}}>
-		<SearchContextProvider>
-			<HashRouter>
+		<HashRouter>
+			<SearchContextProvider>
 				<Routes>
 					<Route path={ROUTES.HOME} element={<Home />} />
 					<Route path={ROUTES.CHAT} element={<Chat />} />
 					<Route path={ROUTES.NOTES} element={<Notes />} />
 					{/* Add other routes */}
 				</Routes>
-			</HashRouter>
-		</SearchContextProvider>
+			</SearchContextProvider>
+		</HashRouter>
 	</ConfigProvider>
 );
 

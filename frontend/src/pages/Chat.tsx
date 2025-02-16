@@ -1,11 +1,18 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const Chat: React.FC = () => {
+
 	const [prompt, setPrompt] = useState("");
 	const [response, setResponse] = useState("");
 
 	const [imgPrompt, setImgPrompt] = useState("");
-	const [imageSrc, setImageSrc] = useState("");
+    const [imageSrc, setImageSrc] = useState("");
+    
+    const location = useLocation();
+
+    const userRequest = location.state.context as string;
+    console.log("User request:", userRequest);
 
 	const handleGenerate = async () => {
 		const image = await generateImage(imgPrompt);
