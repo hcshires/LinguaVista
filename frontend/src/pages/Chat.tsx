@@ -5,36 +5,50 @@ const Chat = () => {
   const [response, setResponse] = useState("");
 
   const [imgPrompt, setImgPrompt] = useState("");
-  const [imageSrc, setImageSrc] = useState("");
+    const [imageSrc, setImageSrc] = useState("");
+    const [image, setImage] = useState("");
 
   const handleGenerate = async () => {
-    const image = await generateImage(imgPrompt);
-    if (image) {
-      setImageSrc(image);
-    }
+    const imageRes = await generateImage(imgPrompt);
+    // if (imageRes) {
+    //   setImage(image);
+    // }
+  };
+    
+  const generateImage = async (prompt: string) => {
+    const response = await fetch('http://localhost:8000/generate/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt }),
+    });
+    const data = await response.json();
+      console.log("data", data);
+      setImage(data.image);
   };
 
-  const generateImage = async (prompt: string) => {
-    try {
-      const response = await fetch(
-        "http://localhost:3010/api/image/generate-image",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            prompt: prompt || "A painting of a beautiful sunset",
-          }),
-        }
-      );
-      const data = await response.json();
-      return `data:image/png;base64,${data.image}`;
-    } catch (error) {
-      console.error("Error fetching image:", error);
-      return null;
-    }
-  };
+//   const generateImage = async (prompt: string) => {
+//     try {
+//       const response = await fetch(
+//         "http://localhost:3010/api/image/generate-image",
+//         {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             prompt: prompt || "A painting of a beautiful sunset",
+//           }),
+//         }
+//       );
+//       const data = await response.json();
+//       return `data:image/png;base64,${data.image}`;
+//     } catch (error) {
+//       console.error("Error fetching image:", error);
+//       return null;
+//     }
+//   };
 
   const getLlamaResponse = async (userPrompt: string) => {
     const systemPrompt =
@@ -69,6 +83,8 @@ const Chat = () => {
     const reply = await getLlamaResponse(prompt);
     setResponse(reply);
   };
+    
+    console.log("image", image);    
 
   return (
     <div>
@@ -93,7 +109,8 @@ const Chat = () => {
         placeholder="Enter prompt"
       />
       <button onClick={handleGenerate}>Generate Image</button>
-      {imageSrc && <img src={imageSrc} alt="Generated" />}
+          {/* {imageSrc && <img src={imageSrc} alt="Generated" />} */}
+          {image && <img src={image} alt="Generated" />}
     </div>
   );
 };
