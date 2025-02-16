@@ -1,7 +1,6 @@
 import React from "react";
 import { Layout, Typography, Collapse } from "antd";
-import Navbar from "../components/Navbar";
-import { ROUTES } from "../helpers/Lang";
+import Navbar from "../components/Navbar.tsx";
 
 const { Title, Paragraph } = Typography;
 const { Content } = Layout;

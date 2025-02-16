@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Layout, Button, Drawer, Avatar, Space, Image, Flex, Divider, Tag } from "antd";
 import { UserOutlined, EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { ROUTES } from "../helpers/Lang";
+import { ROUTES } from "../helpers/Lang.ts";
 const { Header } = Layout;
 
 const Navbar: React.FC = () => {

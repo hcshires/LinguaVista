@@ -2,7 +2,7 @@ import React from "react";
 import type { FormProps } from "antd";
 import { Button, Checkbox, Flex, Form, Input } from "antd";
 import { Layout } from "antd";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/Navbar.tsx";
 const { Content } = Layout;
 
 type FieldType = {
