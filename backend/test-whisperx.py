@@ -29,7 +29,7 @@ print(result["segments"]) # after alignment
 # import gc; gc.collect(); torch.cuda.empty_cache(); del model_a
 
 # 3. Assign speaker labels
-diarize_model = whisperx.DiarizationPipeline(use_auth_token=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, device=device)
+diarize_model = whisperx.DiarizationPipeline(use_auth_token="", device=device)
 
 # add min/max number of speakers if known
 diarize_segments = diarize_model(audio)
