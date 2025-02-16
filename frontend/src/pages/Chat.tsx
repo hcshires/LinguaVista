@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { Layout, theme, Segmented, Card, Flex } from "antd";
+import { Layout, Typography, theme, Segmented, Card, Flex } from "antd";
 import { LeftCircleOutlined, MenuOutlined } from "@ant-design/icons";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useConversation } from "../context/ConversationContext";
 import { Footer } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
+import { Comment } from "@ant-design/compatible/";
 
 const { Content } = Layout;
+const { Title } = Typography;
 
 const Chat: React.FC = () => {
 	const { currConvo, setAllConvos, setCurrConvo, appendConvo } = useConversation();
@@ -25,6 +27,7 @@ const Chat: React.FC = () => {
 	const userVidRef = useRef(null);
 	const userVidRef2 = useRef(null);
 
+	const navigate = useNavigate();
 	const location = useLocation();
 
 	const userRequest = location.state.context as string;
@@ -175,7 +178,13 @@ const Chat: React.FC = () => {
 			<Layout style={{ backgroundColor: "#A9A9A9" }}>
 				<Content style={{ height: "100%", marginTop: 24 }}>
 					<Flex dir="row" flex={1} justify="flex-start" align="flex-start">
-						<LeftCircleOutlined style={{ padding: "12px 36px", color: "red", fontSize: 36 }} />
+						<LeftCircleOutlined
+							style={{ padding: "12px 36px", color: "red", fontSize: 36 }}
+							onClick={() => {
+								navigate("/");
+								appendConvo();
+							}}
+						/>
 						<Card style={{ flex: 1, backgroundColor: "green" }} />
 						<MenuOutlined
 							style={{ padding: "12px 36px", borderWidth: 1, borderColor: "black", color: "black", fontSize: 36 }}
@@ -234,7 +243,28 @@ const Chat: React.FC = () => {
 					</Flex>
 				</Footer>
 			</Layout>
-			<Sider trigger={null} collapsed={viewTranscript} collapsible={true} collapsedWidth={0} width={300} reverseArrow={true} />
+			<Sider trigger={null} collapsed={viewTranscript} collapsible={true} collapsedWidth={0} width={300} reverseArrow={true}>
+				<Flex vertical style={{ height: "100%", backgroundColor: "white", padding: 24 }} justify="flex-start">
+					<Title style={{ textAlign: "center" }}>Transcript</Title>
+					{currConvo.map((convo) => (
+						<Comment
+							author={convo.role}
+							content={
+								<div
+									style={{
+										width: "100%",
+										padding: "8px 12px",
+										background: "#f0f0f0",
+										borderRadius: "16px",
+										display: "inline-block",
+									}}>
+									{convo.content}
+								</div>
+							}
+						/>
+					))}
+				</Flex>
+			</Sider>
 		</Layout>
 	);
 };
