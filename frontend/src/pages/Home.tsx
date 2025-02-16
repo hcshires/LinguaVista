@@ -51,7 +51,7 @@ const Home: React.FC = () => {
 					}}>
 					<Card>
 						<Segmented options={items} value={searchCategory} onChange={setSearchCategory} block />
-						<SearchBar />
+						<SearchBar category={searchCategory} />
 					</Card>
 				</div>
 			</Content>

@@ -43,6 +43,12 @@ IMAGE_DIR = "temp_images"
 os.makedirs(IMAGE_DIR, exist_ok=True)
 app.mount("/images", StaticFiles(directory=IMAGE_DIR), name="images")
 
+
+@app.get("/image")
+async def get_image():
+    filename = "3bc85e0e-f48d-4e8b-9e4e-e7da542a3a42.png"
+    return {"url": f"http://127.0.0.1:8001/images/{filename}"}
+
 # look for cached, or wait until cached is available
 @app.post("/generate/")
 async def generate_image(request: ImageRequest):
@@ -233,7 +239,7 @@ from RealtimeTTS import TextToAudioStream, CoquiEngine
 def say(text, stream):
     print("saying", text)
     def dummy_generator():
-        yield text 
+        yield text
     stream.feed(dummy_generator()).play(log_synthesized_text=False)
 
 # Llama LLM
@@ -243,7 +249,7 @@ async def stream_llm(cached_conversation, n, prompt, system_message=""):
 
     system_message = {
         "role": "system",
-        "content": f"You are a friendly and warm conversation partner with a passion for {"Japanese"} culture. Keep it very concise and short, no more than 50 words! Engage in natural dialogue with the user—ask follow-up questions, share personal insights, and respond as if you were talking to a close friend. Keep your tone relaxed, genuine, and spontaneous, avoiding overly formal or mechanical language. "
+        "content": f"You are a friendly and warm conversation partner with a passion for learning. Keep it very concise and short, no more than 50 words! Engage in natural dialogue with the user—ask follow-up questions, share personal insights, and respond as if you were talking to a close friend. Keep your tone relaxed, genuine, and spontaneous, avoiding overly formal or mechanical language. "
     }
 
     message = {
@@ -282,7 +288,7 @@ async def answer(prompt):
                     to_speak = parts[0] + punct[0]  # Keep the punctuation
                     buffer = parts[1] if len(parts) > 1 else ''
                     full_text += to_speak
-                    say(to_speak, tts_stream)
+                    # say(to_speak, tts_stream)
                     break
     if len(cached_conversation) == n:
         cached_conversation.pop(0)
@@ -293,11 +299,12 @@ async def answer(prompt):
 async def get_llm_result(request: LlmRequest, background_tasks: BackgroundTasks):
     print("received llm request", request.prompt)
     result = await answer(request.prompt)
-
+    audio = result[-1]["content"]
     # asynchronously call the generate without background tasks
     
     print("llm result", result)
     # await answer(request.prompt)
+    background_tasks.add_task(say, audio, tts_stream)
     return {"status": "success", "message": result}
     
 
@@ -325,7 +332,7 @@ def transcribe_audio(audio_file_path: str) -> Optional[dict]:
             "--file-name", audio_file_path,
             "--device-id", "mps",
             "--model-name", "openai/whisper-base",
-            "--batch-size", "64",
+            "--batch-size", "32",
             "--transcript-path", "transcript.json"
         ]
         

@@ -7,6 +7,8 @@ import { Footer } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import { Comment } from "@ant-design/compatible/";
 import Bubble from "../components/bubble";
+import { text } from "node:stream/consumers";
+import { Spin } from "antd";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -20,11 +22,12 @@ const Chat: React.FC = () => {
 	const [imgPrompt, setImgPrompt] = useState("");
 	const [imageSrc, setImageSrc] = useState("");
 
-	const [viewTranscript, setViewTranscript] = useState(true);
+	const [viewTranscript, setViewTranscript] = useState(false);
 	const [volume, setVolume] = useState(0);
 	const [aiActive, setAiActive] = useState(false);
 	const userActive = useMemo(() => !aiActive && volume > 20, [volume, aiActive]);
 	const [isAgentThinking, setIsAgentThinking] = useState(false);
+	const [tutorWords, setTutorWords] = useState("Hi! Let's learn together! Ask me anything and give me a nudge!");
 
 	const userVidRef = useRef(null);
 	const userVidRef2 = useRef(null);
@@ -33,40 +36,47 @@ const Chat: React.FC = () => {
 	const location = useLocation();
 
 	const userRequest = location.state.context as string;
-	// console.log("User request:", volume);
+	const [textboxState, setTextboxState] = useState(""); // for emergency use
+	// console.log("User request:", userRequest);
 
 	// Handler to fetch transcript data and update conversation history
+	var userTranscript = "";
 	const handleTranscript = async () => {
 		// 1. Get the audio file directory
-		const audioFileDir = await fetch("http://localhost:8000/log")
-			.then((response) => response.text())
-			.then((data) => {
-				console.log("Audio file directory:", data);
-				return data;
-			});
+		setIsAgentThinking(true);
+		setTutorWords("Let me think about that for a moment...");
+		if (textboxState === "") {
+			const audioFileDir = await fetch("http://localhost:8000/log")
+				.then((response) => response.text())
+				.then((data) => {
+					console.log("Audio file directory:", data);
+					return data;
+				});
 
-		// 2. Process user audio to get transcript text
-		const userTranscript = await fetch("http://127.0.0.1:8001/process_audio/", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				file_path: audioFileDir,
-			}),
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				console.log("User transcript data:", data);
-				return data.message;
-			});
-		console.log("User transcript:", userTranscript);
+			// 2. Process user audio to get transcript text
+			userTranscript = await fetch("http://127.0.0.1:8001/process_audio/", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					file_path: audioFileDir,
+				}),
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					console.log("User transcript data:", data);
+					return data.message;
+				});
+			console.log("User transcript:", userTranscript);
+		} else {
+			userTranscript = textboxState;
+			setTextboxState("");
+		}
 
 		// 3. Append the user transcript to the conversation state
-		// setCurrConvo((prev) => [
-		//   ...prev,
-		//   { role: "user", content: userTranscript },
-		// ]);
+		setCurrConvo((prev) => [...prev, { role: "user", content: userTranscript }]);
+		localStorage.setItem("convo", JSON.stringify(currConvo));
 		// If using an addConversationEntry helper:
 		// addConversationEntry({ role: "user", content: userTranscript });
 
@@ -83,16 +93,33 @@ const Chat: React.FC = () => {
 			.then((response) => response.json())
 			.then((data) => {
 				console.log("Tutor transcript data:", data);
+				// setTutorWords(data.message[data.message.length - 1].content);
+				setTutorWords("");
+				setIsAgentThinking(false);
 				return data.message[data.message.length - 1].content;
 			});
 		console.log("Tutor transcript:", tutorTranscript);
 
 		// 5. Append the tutor transcript to the conversation state
 		setCurrConvo((prev) => [...prev, { role: "assistant", content: tutorTranscript }]);
+		localStorage.setItem("convo", JSON.stringify(currConvo));
 		// Or using helper:
 		// addConversationEntry({ role: "assistant", content: tutorTranscript });
 
 		// 6. (Optional) Generate an image based on the tutor transcript
+		// const getImage = await fetch("http://127.0.0.1:8001/image/", {
+		// 	method: "GET",
+		// 	headers: {
+		// 		"Content-Type": "application/json",
+		// 	},
+		// })
+		// 	.then((response) => response.json())
+		// 	.then((data) => {
+		// 		console.log("Image data:", data);
+		// 		setImageSrc(data.url);
+		// 		return data.url;
+		// 	});
+
 		const imageResponse = await fetch("http://127.0.0.1:8001/generate/", {
 			method: "POST",
 			headers: {
@@ -272,10 +299,24 @@ const Chat: React.FC = () => {
 							}}
 						/>
 					</Flex>
+					<div
+						style={{
+							color: "black",
+							fontSize: "1.6em",
+							fontWeight: "bold",
+							textAlign: "center",
+						}}>
+						{tutorWords}
+					</div>
 					<center>
-						
 						<Bubble setThinking={setIsAgentThinking} additionalOnClickActions={handleTranscript} />
-	
+						<input
+							type="text"
+							value={textboxState}
+							onChange={(e) => setTextboxState(e.target.value)}
+							placeholder="Ask me about... "
+							style={{ width: "400px", borderRadius: "10px", height: "40px", fontSize: "1.2em", marginTop: "24px", padding: "10px" }}
+						/>
 					</center>
 				</Content>
 				<Footer style={{ backgroundColor: "" }}>
@@ -336,7 +377,7 @@ const Chat: React.FC = () => {
 							}>
 							{/* <video width={300} playsInline ref={userVidRef2} autoPlay muted/> */}
 							{/* the image data */}
-							{imageSrc && (
+							{imageSrc ? (
 								<img
 									style={{
 										borderRadius: 8,
@@ -347,12 +388,25 @@ const Chat: React.FC = () => {
 									height={225}
 									alt="Generated"
 								/>
+							) : (
+								<div
+									style={{
+										borderRadius: 8,
+										backgroundColor: "#ffffff",
+										width: 300,
+										height: 225,
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+									}}>
+									{isAgentThinking ? <Spin /> : <p>Visualization</p>}
+								</div>
 							)}
 						</div>
 					</Flex>
 				</Footer>
 			</Layout>
-			<Sider trigger={null} collapsed={viewTranscript} collapsible={true} collapsedWidth={0} width={300} reverseArrow={true}>
+			<Sider trigger={null} collapsed={viewTranscript} collapsible={false} collapsedWidth={0} width={300} reverseArrow={true}>
 				<Flex vertical style={{ height: "100%", backgroundColor: "#f0f7fa", padding: 24 }} justify="flex-start">
 					<p
 						style={{
@@ -366,6 +420,7 @@ const Chat: React.FC = () => {
 					<div style={{ height: "100%", overflowY: "scroll" }}>
 						{currConvo.map((convo) => (
 							<Comment
+								style={{ backgroundColor: "transparent" }}
 								key={Math.random()}
 								author={convo.role}
 								content={
@@ -373,7 +428,7 @@ const Chat: React.FC = () => {
 										style={{
 											width: "100%",
 											padding: "8px 12px",
-											background: "#f0f0f0",
+											background: "#ffffff",
 											borderRadius: "16px",
 											display: "inline-block",
 										}}>
@@ -382,6 +437,11 @@ const Chat: React.FC = () => {
 								}
 							/>
 						))}
+						{isAgentThinking && (
+							<div style={{ textAlign: "center", marginTop: 24 }}>
+								<Spin />
+							</div>
+						)}
 					</div>
 				</Flex>
 			</Sider>

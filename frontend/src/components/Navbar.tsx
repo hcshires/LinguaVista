@@ -56,19 +56,19 @@ const Navbar: React.FC = () => {
 						Edit
 					</Button>
 				}>
-				<Divider orientation="left">Name</Divider>
-				<p>Firstname Lastname</p>
-				<Divider orientation="left">Strengths</Divider>
+				<p style={{fontSize: "1.2em", fontWeight: "bold"}}>Name</p>
+				<p>John Doe</p>
+				<p style={{fontSize: "1.2em", fontWeight: "bold"}}>Strengths</p>
 				<Flex gap="4px 0" wrap>
 					<Tag color="magenta">Spanish: Greetings</Tag>
 					<Tag color="red">Geography: US Capitals</Tag>
 				</Flex>
-				<Divider orientation="left">Likes</Divider>
+				<p style={{fontSize: "1.2em", fontWeight: "bold"}}>Likes</p>
 				<Flex gap="4px 0" wrap>
 					<Tag color="green">Video Games</Tag>
 					<Tag color="blue">Sports</Tag>
 				</Flex>
-				<Divider orientation="left">Dislikes</Divider>
+				<p style={{fontSize: "1.2em", fontWeight: "bold"}}>Dislikes</p>
 				<Flex gap="4px 0" wrap>
 					<Tag color="yellow">Vegetables</Tag>
 					<Tag color="gray">Winter</Tag>

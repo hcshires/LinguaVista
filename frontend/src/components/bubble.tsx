@@ -303,19 +303,19 @@ const Bubble: React.FC = ({ setThinking, additionalOnClickActions }) => {
 
 				<canvas 
 					ref={canvasRef} 
-					width={500} 
-					height={500} 
+					width={400} 
+					height={400} 
 					className="mb-4"
 					onClick={startAnimation}
 				/>
-				<div style={{ position: "absolute", width: "100%", height: "100px", top: "40%", left: "50%", transform: "translate(-50%, -50%)" }}>
+				{/* <div style={{ position: "absolute", width: "100%", height: "100px", top: "35%", left: "50%", transform: "translate(-50%, -50%)" }}>
 					<center style={{
 						color: "white",
-						fontSize: "0.8em",
+						fontSize: "0.6em",
 						textAlign: "center",
 						pointerEvents: "none"
 					}}>{thoughts}</center>
-				</div>
+				</div> */}
 				</div>
 			</div>
 		// 	</div>
