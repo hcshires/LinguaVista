@@ -17,8 +17,8 @@ interface WebGLTypes {
 const Bubble: React.FC = ({ setThinking, additionalOnClickActions }) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const [noiseValue, setNoiseValue] = useState<number>(0.1);
-	const [color, setColor] = useState<string>("vec3(0.0, 0.5, 0.5), vec3(0.0, 1.0, 0.9)");
-	const [zScale, setZScale] = useState<number>(0.5);
+	const [color, setColor] = useState<string>("vec3(0.0, 0.5, 1.0), vec3(0.0, 1.0, 1.0)");
+	const [zScale, setZScale] = useState<number>(1.);
 	const [isForward, setIsForward] = useState(true);
 	const [thoughts, setThoughts] = useState<string>("Hi! I'm your AI assistant. Ask me anything and give me a nudge!");
 
@@ -182,7 +182,8 @@ const Bubble: React.FC = ({ setThinking, additionalOnClickActions }) => {
 	  varying vec3 vPos, vNor;
   
 	  vec3 getViewDirection() {
-		return normalize(vec3(0., 0., 3.) - vPos);
+		//   light source
+		return normalize(vec3(1., 2., 10.) - vPos);
 	  }
   
 	  float getMixValue() {
@@ -197,7 +198,7 @@ const Bubble: React.FC = ({ setThinking, additionalOnClickActions }) => {
 	  }
   
 	  void main(void) {
-		float c = .05 + max(0., dot(normalize(vNor), vec3(.57)));
+		float c = .05 + max(0., dot(normalize(vNor), vec3(.27)));
 		vec3 color = vec3(c) * getMixedValueColor();
 		gl_FragColor = vec4(sqrt(color), 0.7);
 	  }
@@ -297,20 +298,25 @@ const Bubble: React.FC = ({ setThinking, additionalOnClickActions }) => {
 	return (
 		// <ConfigProvider theme={{ token: { colorPrimary: "#00b96b" } }}>
 		// 	<div className="App">
-			<div className="flex flex-col items-center bg-black p-4 w-full">
-			<div style={{
-				color: "black",
-				fontSize: "1.em",
-				fontWeight: "bold",
-				textAlign: "center"
-			}}>{thoughts}</div>
-			<canvas 
-				ref={canvasRef} 
-				width={500} 
-				height={500} 
-				className="mb-4"
-				onClick={startAnimation}
-			/>
+			<div className="flex flex-col items-center bg-black p-4 w-full relative">
+				      <div className="relative aspect-square">
+
+				<canvas 
+					ref={canvasRef} 
+					width={500} 
+					height={500} 
+					className="mb-4"
+					onClick={startAnimation}
+				/>
+				<div style={{ position: "absolute", width: "100%", height: "100px", top: "40%", left: "50%", transform: "translate(-50%, -50%)" }}>
+					<center style={{
+						color: "white",
+						fontSize: "0.8em",
+						textAlign: "center",
+						pointerEvents: "none"
+					}}>{thoughts}</center>
+				</div>
+				</div>
 			</div>
 		// 	</div>
 		// </ConfigProvider>
